@@ -1,0 +1,15 @@
+{
+  "google": {
+    "client_id": "your-google-client-id.apps.googleusercontent.com",
+    "client_secret": "your-google-client-secret"
+  },
+  "cloudflare": {
+    "client_id": "your-cloudflare-oauth-client-id",
+    "scopes": [
+      "zone.read",
+      "account-analytics.read",
+      "analytics.read",
+      "account-settings.read"
+    ]
+  }
+}

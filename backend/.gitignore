@@ -1,0 +1,19 @@
+.env
+oauth.json
+.kinexis_api_token
+*.db
+__pycache__/
+*.pyc
+.venv/
+venv/
+dist/
+build/
+*.spec
+*.egg-info/
+
+# Fine-tune artifacts (large)
+finetune/.venv/
+finetune/output/
+finetune/llama.cpp/
+finetune/data/*.jsonl
+!finetune/data/.gitkeep

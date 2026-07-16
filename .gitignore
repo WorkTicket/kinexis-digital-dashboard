@@ -1,0 +1,58 @@
+# Kinexis Digital Dashboard
+node_modules/
+.next/
+out/
+dist/
+build/
+.env
+.env.*
+!.env.template
+!.env.example
+oauth.json
+.kinexis_api_token
+backend/.kinexis_api_token
+.kinexis_fernet_key
+backend/.kinexis_fernet_key
+*.db
+*.db-shm
+*.db-wal
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+*.log
+.DS_Store
+Thumbs.db
+# Fine-tune / large local artifacts
+backend/finetune/llama.cpp/
+backend/finetune/output/
+backend/finetune/.venv/
+backend/finetune/data/
+
+# Pyinstaller / build config
+*.spec
+!kinexis-backend.spec
+*.tsbuildinfo
+
+# Test caches
+.pytest_cache/
+.vscode/
+
+# Personal IDE config
+.cursor/
+
+# Internal development notes (not for public repo)
+AGENT_INSTRUCTIONS.md
+AUDIT_REPORT.md
+ROADMAP_10.md
+SESSION_PATTERNS.md
+
+# Crash / debug artifacts
+test_crash.*
+*_crash_repro.*
+*catch-crash*
+*repro-*crash*
+inspect-ui.*
+walk-app.*
+

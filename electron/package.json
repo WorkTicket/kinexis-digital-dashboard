@@ -1,0 +1,59 @@
+{
+  "name": "kinexis-desktop",
+  "version": "0.0.1-beta",
+  "description": "Kinexis Digital Dashboard - Windows Desktop App",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win",
+    "publish": "electron-builder --win --publish always",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "com.kinexis.desktop",
+    "productName": "Kinexis",
+    "directories": {
+      "output": "dist"
+    },
+    "extraResources": [
+      {
+        "from": "../backend/dist/kinexis-backend",
+        "to": "backend"
+      },
+      {
+        "from": "../frontend/out",
+        "to": "frontend"
+      },
+      {
+        "from": "assets",
+        "to": "assets"
+      }
+    ],
+    "publish": {
+      "provider": "github",
+      "owner": "WorkTicket",
+      "repo": "kinexis-digital-dashboard",
+      "private": false
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico",
+      "sign": null,
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Kinexis"
+    }
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.0"
+  }
+}
