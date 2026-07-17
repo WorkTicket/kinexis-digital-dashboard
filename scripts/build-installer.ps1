@@ -78,7 +78,7 @@ $installer = Get-ChildItem "$root\electron\dist" -Filter "Kinexis-Setup*.exe" -E
     Sort-Object LastWriteTime -Descending |
     Select-Object -First 1
 if ($installer) {
-    Write-Host "`nDone! Installer (canonical name — use THIS file):" -ForegroundColor Green
+    Write-Host "`nDone! Installer (canonical name - use THIS file):" -ForegroundColor Green
     Write-Host $installer.FullName
     Write-Host ("Built: {0}  Size: {1:N0} bytes" -f $installer.LastWriteTime, $installer.Length)
     if ($Publish) {
