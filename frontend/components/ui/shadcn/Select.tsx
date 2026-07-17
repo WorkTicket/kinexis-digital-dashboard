@@ -26,7 +26,7 @@ function SelectTrigger({
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       className={cn(
-        "flex h-9 w-full items-center justify-between gap-2 whitespace-nowrap rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--ink)] shadow-sm ring-offset-background transition-colors placeholder:text-[var(--muted-dim)] hover:border-[color:var(--border-strong)] focus:outline-none focus:ring-2 focus:ring-[color:var(--ring)] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:truncate",
+        "flex h-9 w-full items-center justify-between gap-2 whitespace-nowrap rounded-[var(--radius-md)] border border-[color:var(--border-default)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--ink)] shadow-panel ring-offset-background transition-colors placeholder:text-[var(--muted-dim)] hover:border-[color:var(--border-strong)] focus:outline-none focus:ring-2 focus:ring-[color:var(--ring)] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:truncate",
         className
       )}
       {...props}
@@ -78,7 +78,7 @@ function SelectLabel({ className, ...props }: React.ComponentProps<typeof Select
   return (
     <SelectPrimitive.Label
       data-slot="select-label"
-      className={cn("px-2 py-1.5 text-xs font-semibold text-[var(--muted)]", className)}
+      className={cn("px-2 py-2 text-xs font-semibold text-[var(--muted)]", className)}
       {...props}
     />
   );
@@ -93,7 +93,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "outline-hidden relative flex w-full cursor-pointer select-none items-center rounded-[var(--radius-sm)] py-1.5 pl-2 pr-8 text-sm transition-colors hover:bg-[var(--hover-fill)] focus:bg-[var(--hover-fill)] focus:text-[var(--ink)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "outline-hidden relative flex w-full cursor-pointer select-none items-center rounded-[var(--radius-sm)] py-2 pl-2 pr-8 text-sm transition-colors hover:bg-[var(--hover-fill)] focus:bg-[var(--hover-fill)] focus:text-[var(--ink)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className
       )}
       {...props}

@@ -15,7 +15,7 @@ export const MONTH_NAMES = [
   "December",
 ];
 
-const FOCUS_FALLBACK = "#0891B2";
+const FOCUS_FALLBACK = "var(--kinexis-proof)";
 
 export function prevMonth(d = new Date()) {
   const m = d.getMonth(); // 0-indexed (0=Jan, 11=Dec)

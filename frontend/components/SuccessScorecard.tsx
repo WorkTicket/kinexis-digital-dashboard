@@ -3,7 +3,8 @@
 import { useMemo } from "react";
 import { Metric } from "@/lib/api";
 import { buildKpiSummaries, formatKpiValue, type PeriodOption } from "@/lib/metrics";
-import { TrendingUp, TrendingDown, Minus, Target } from "lucide-react";
+import { Stat } from "@/components/ui/Stat";
+import { Panel } from "@/components/ui/Panel";
 
 type Props = {
   metrics: Metric[];
@@ -26,12 +27,12 @@ export default function SuccessScorecard({ metrics, period = "7d" }: Props) {
   if (kpis.length === 0) return null;
 
   return (
-    <div className="animate-fade-up animate-fade-up-delay-1 mb-7">
-      <div className="mb-4 flex items-baseline justify-between">
+    <Panel className="animate-fade-up animate-fade-up-delay-1" padding={false}>
+      <div className="flex items-baseline justify-between border-b border-[color:var(--border-subtle)] px-4 py-4">
         <h2 className="text-[13px] font-medium text-ink">Success metrics</h2>
         <span className="text-muted font-mono-data text-[12px]">{periodLabel}</span>
       </div>
-      <div className="metric-grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7">
+      <div className="metric-grid grid-cols-2 p-4 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7">
         {kpis.map((kpi) => {
           const invert = kpi.key === "ad_cost";
           const rawUp = kpi.changePct != null && kpi.changePct > 0.5;
@@ -42,63 +43,28 @@ export default function SuccessScorecard({ metrics, period = "7d" }: Props) {
             kpi.target && kpi.target > 0 ? Math.min(100, (kpi.value / kpi.target) * 100) : null;
           const onTrack = targetPct != null && targetPct >= 80;
 
+          const hintParts: string[] = [];
+          if (kpi.changePct != null) {
+            hintParts.push(`${kpi.changePct > 0 ? "+" : ""}${kpi.changePct.toFixed(0)}%`);
+          }
+          if (targetPct != null) {
+            hintParts.push(
+              onTrack ? `On track ${Math.round(targetPct)}%` : `${Math.round(targetPct)}% of target`
+            );
+          }
+
           return (
-            <div key={kpi.key} className="metric-tile panel-interactive" title={kpi.hint}>
-              <p className="text-label mb-2">{kpi.label}</p>
-              <p className="text-metric text-[1.35rem] leading-none">
-                {formatKpiValue(kpi.value, kpi.format)}
-              </p>
-              {targetPct != null && (
-                <div className="mt-1.5 flex items-center gap-1.5">
-                  <Target
-                    size={10}
-                    className={onTrack ? "text-kinexis-proof" : "text-kinexis-risk"}
-                  />
-                  <div className="h-1 flex-1 overflow-hidden rounded-full bg-surface-border">
-                    <div
-                      className={`h-full rounded-full transition-all duration-bar ${
-                        onTrack ? "bg-kinexis-proof/60" : "bg-kinexis-risk/60"
-                      }`}
-                      style={{ width: `${targetPct}%` }}
-                    />
-                  </div>
-                  <span
-                    className={`font-mono-data text-[11px] font-medium ${
-                      onTrack ? "text-kinexis-proof/80" : "text-kinexis-risk/80"
-                    }`}
-                  >
-                    {Math.round(targetPct)}%
-                  </span>
-                </div>
-              )}
-              <div className="mt-2.5 flex items-center gap-1">
-                {kpi.changePct == null ? (
-                  <span className="text-muted flex items-center gap-0.5 text-xs">
-                    <Minus size={10} /> —
-                  </span>
-                ) : (
-                  <span
-                    className={`font-mono-data flex items-center gap-0.5 text-[11px] font-medium ${
-                      up ? "text-kinexis-proof/80" : down ? "text-kinexis-risk/80" : "text-muted"
-                    }`}
-                    aria-label={`${kpi.label}: ${kpi.changePct > 0 ? "+" : ""}${kpi.changePct.toFixed(0)}% change`}
-                  >
-                    {up ? (
-                      <TrendingUp size={11} aria-hidden />
-                    ) : down ? (
-                      <TrendingDown size={11} aria-hidden />
-                    ) : (
-                      <Minus size={11} aria-hidden />
-                    )}
-                    {kpi.changePct > 0 ? "+" : ""}
-                    {kpi.changePct.toFixed(0)}%
-                  </span>
-                )}
-              </div>
-            </div>
+            <Stat
+              key={kpi.key}
+              label={kpi.label}
+              value={formatKpiValue(kpi.value, kpi.format)}
+              hint={hintParts.length > 0 ? hintParts.join(" · ") : undefined}
+              tone={up ? "success" : down ? "danger" : "default"}
+              className="panel-interactive"
+            />
           );
         })}
       </div>
-    </div>
+    </Panel>
   );
 }

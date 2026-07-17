@@ -2,7 +2,6 @@
 
 import type { ReactNode } from "react";
 import GrowthLeverGauge from "@/components/GrowthLeverGauge";
-import { EmptyState } from "@/components/ui/EmptyState";
 import type { GrowthLever, SuccessReport } from "@/lib/api";
 import { motion } from "@/lib/motion";
 
@@ -10,19 +9,19 @@ type Stage = "detect" | "prescribe" | "execute" | "prove";
 
 const STAGE_META: Record<Stage, { label: string; title: string }> = {
   detect: {
-    label: "Detected",
-    title: "What surfaced",
+    label: "Opportunity",
+    title: "What we found",
   },
   prescribe: {
-    label: "Prescribed",
-    title: "What we chose to pull",
+    label: "Plan",
+    title: "What we prioritized",
   },
   execute: {
-    label: "Executed",
-    title: "What shipped",
+    label: "Delivery",
+    title: "What we shipped",
   },
   prove: {
-    label: "Proved",
+    label: "Results",
     title: "What improved",
   },
 };
@@ -41,12 +40,12 @@ function LoopSection({
   const meta = STAGE_META[stage];
   return (
     <section
-      className={`report-loop-section pl-5 ${motion.loadIn} ${motion.staggerClass(stagger - 1)}`}
+      className={`report-loop-section ${motion.loadIn} ${motion.staggerClass(stagger - 1)}`}
     >
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-6">
         <div className="min-w-0 flex-1">
           <p
-            className="text-[12px] font-semibold"
+            className="text-label"
             style={{
               color:
                 stage === "detect"
@@ -60,10 +59,12 @@ function LoopSection({
           >
             {meta.label}
           </p>
-          <h2 className="mt-1.5 font-display text-lg font-normal tracking-[-0.02em] text-[var(--kinexis-ink)]">
+          <h2 className="report-loop-chapter-title mt-2 font-display font-normal text-[var(--kinexis-ink)]">
             {meta.title}
           </h2>
-          <div className="mt-3 space-y-2 text-sm text-ink-secondary">{children}</div>
+          <div className="mt-4 space-y-3 text-[15px] leading-relaxed text-ink-secondary">
+            {children}
+          </div>
         </div>
         {aside}
       </div>
@@ -122,31 +123,33 @@ export function ReportLoopNarrative({ report, provenLevers }: Props) {
   const topLever = provenLevers[0];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       <LoopSection
         stage="detect"
         stagger={1}
         aside={
           topLever?.impact_score != null ? (
-            <GrowthLeverGauge
-              score={topLever.impact_score}
-              confidence={topLever.confidence_label ?? "medium"}
-              size={72}
-              label="Detection strength"
-              className="report-gauge"
-            />
+            <div className="report-no-print shrink-0">
+              <GrowthLeverGauge
+                score={topLever.impact_score}
+                confidence={topLever.confidence_label ?? "medium"}
+                size={72}
+                label="Opportunity strength"
+                className="report-gauge"
+              />
+            </div>
           ) : undefined
         }
       >
         {detectItems.length > 0 ? (
-          <ul className="list-disc space-y-1.5 pl-4">
+          <ul className="list-disc space-y-2 pl-4">
             {detectItems.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
         ) : (
           <p className="text-[var(--kinexis-mist)]">
-            No new detections highlighted for this period.
+            No new opportunities highlighted for this period.
           </p>
         )}
       </LoopSection>
@@ -161,8 +164,8 @@ export function ReportLoopNarrative({ report, provenLevers }: Props) {
                 </p>
                 {lever.cause && <p className="mt-1 text-[var(--kinexis-mist)]">{lever.cause}</p>}
                 {lever.fix && (
-                  <p className="mt-2 text-sm">
-                    <span className="font-medium text-[var(--kinexis-focus)]">Prescription: </span>
+                  <p className="mt-2">
+                    <span className="font-medium text-[var(--kinexis-focus)]">Recommended: </span>
                     {lever.fix}
                   </p>
                 )}
@@ -176,29 +179,25 @@ export function ReportLoopNarrative({ report, provenLevers }: Props) {
             )}
           </>
         ) : (
-          <p className="text-[var(--kinexis-mist)]">No prescription locked for this period.</p>
+          <p className="text-[var(--kinexis-mist)]">No priority locked for this period.</p>
         )}
       </LoopSection>
 
       <LoopSection stage="execute" stagger={3}>
-        <div className="mb-3 flex flex-wrap gap-6">
+        <div className="mb-4 flex flex-wrap gap-6">
           <div>
-            <p className="font-mono text-2xl font-medium text-[var(--kinexis-ink)]">
-              {work.tasks_completed ?? 0}
-            </p>
-            <p className="text-[12px] font-medium text-[var(--kinexis-mist)]">tasks done</p>
+            <p className="report-kpi-value text-[var(--kinexis-ink)]">{work.tasks_completed ?? 0}</p>
+            <p className="text-label mt-1">tasks done</p>
           </div>
           <div>
-            <p className="font-mono text-2xl font-medium text-[var(--kinexis-ink)]">
+            <p className="report-kpi-value text-[var(--kinexis-ink)]">
               {work.insights_resolved ?? 0}
             </p>
-            <p className="text-[12px] font-medium text-[var(--kinexis-mist)]">issues resolved</p>
+            <p className="text-label mt-1">issues resolved</p>
           </div>
           <div>
-            <p className="font-mono text-2xl font-medium text-[var(--kinexis-ink)]">
-              {work.briefs_created ?? 0}
-            </p>
-            <p className="text-[12px] font-medium text-[var(--kinexis-mist)]">briefs</p>
+            <p className="report-kpi-value text-[var(--kinexis-ink)]">{work.briefs_created ?? 0}</p>
+            <p className="text-label mt-1">briefs</p>
           </div>
         </div>
         {work.completed_items && work.completed_items.length > 0 ? (
@@ -219,42 +218,40 @@ export function ReportLoopNarrative({ report, provenLevers }: Props) {
         stagger={4}
         aside={
           topLever?.impact_score != null || impactWins[0] ? (
-            <GrowthLeverGauge
-              score={
-                topLever?.impact_score ??
-                Math.min(100, 60 + Math.abs(impactWins[0]?.avg_primary_metric_change ?? 0))
-              }
-              confidence={topLever?.confidence_label}
-              size={80}
-              label="Proven lift"
-              className="report-gauge"
-            />
+            <div className="report-no-print shrink-0">
+              <GrowthLeverGauge
+                score={
+                  topLever?.impact_score ??
+                  Math.min(100, 60 + Math.abs(impactWins[0]?.avg_primary_metric_change ?? 0))
+                }
+                confidence={topLever?.confidence_label}
+                size={80}
+                label="Proven lift"
+                className="report-gauge"
+              />
+            </div>
           ) : undefined
         }
       >
         {provenLevers.length > 0 && (
-          <ul className="mb-3 space-y-2">
+          <ul className="mb-4 space-y-3">
             {provenLevers.slice(0, 3).map((l) => (
               <li key={l.id}>
                 <p className="font-medium text-[var(--kinexis-ink)]">{l.title}</p>
                 {l.impact_summary && (
-                  <p className="text-xs text-[var(--kinexis-mist)]">{l.impact_summary}</p>
+                  <p className="mt-0.5 text-xs text-[var(--kinexis-mist)]">{l.impact_summary}</p>
                 )}
               </li>
             ))}
           </ul>
         )}
         {impactWins.length === 0 ? (
-          <EmptyState
-            className="!border-0 !bg-transparent !px-0 !py-4"
-            title="No attributed wins yet"
-            description="Complete work and recheck impact in Prove."
-          />
+          <p className="text-[var(--kinexis-mist)]">No attributed wins yet for this period.</p>
         ) : (
-          <ul className="space-y-2">
+          <ul className="space-y-3">
             {impactWins.map((w) => (
               <li key={w.task_id} className="flex gap-3">
-                <span className="shrink-0 font-mono font-semibold text-[var(--kinexis-proof)]">
+                <span className="report-kpi-value shrink-0 text-[var(--kinexis-proof)]">
                   +{w.avg_primary_metric_change}%
                 </span>
                 <span>

@@ -5,6 +5,7 @@ import { Search, Minus, Square, X, Copy, Sun, Moon, Cog } from "lucide-react";
 import ClientSwitcher from "@/components/shell/ClientSwitcher";
 import AccountsMenu from "@/components/shell/AccountsMenu";
 import type { Client } from "@/lib/api";
+import { WINDOWS_CLOSE_RED } from "@/lib/brandColors";
 
 type Props = {
   selectedClientId: number | null;
@@ -105,7 +106,7 @@ export default function CommandChrome({
           <button
             type="button"
             onClick={onCommandPalette}
-            className="titlebar-no-drag text-muted motion-micro hidden w-full max-w-md items-center gap-2.5 border border-[color:var(--border-subtle)] bg-[color:var(--surface)] px-3.5 py-2 text-[13px] shadow-panel hover:border-[color:var(--border-default)] hover:text-ink-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kinexis-focus/30 sm:inline-flex"
+            className="titlebar-no-drag text-muted motion-micro hidden w-full max-w-md items-center gap-2 border border-[color:var(--border-subtle)] bg-[color:var(--surface)] px-4 py-2 text-[13px] shadow-panel hover:border-[color:var(--border-default)] hover:text-ink-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kinexis-focus/30 sm:inline-flex"
             style={
               {
                 WebkitAppRegion: "no-drag",
@@ -183,7 +184,13 @@ export default function CommandChrome({
           <button
             type="button"
             aria-label="Close"
-            className="text-muted motion-micro flex h-full w-[46px] items-center justify-center hover:bg-[#e81123] hover:text-white"
+            className="text-muted motion-micro flex h-full w-[46px] items-center justify-center hover:text-white"
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = WINDOWS_CLOSE_RED;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "";
+            }}
             onClick={() => void window.kinexis?.windowClose?.()}
           >
             <X size={14} strokeWidth={1.5} />

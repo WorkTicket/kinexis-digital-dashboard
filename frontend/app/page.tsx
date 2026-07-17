@@ -190,7 +190,7 @@ function AppHome() {
       }
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       if (!selectedClientId || activeTab === "portfolio" || activeTab === "settings") return;
-      const tabIds: ShellTab[] = ["detect", "charts", "prescribe", "execute", "prove", "report"];
+      const tabIds: ShellTab[] = ["detect", "prescribe", "execute", "prove", "report"];
       const n = Number(e.key);
       if (n >= 1 && n <= tabIds.length) {
         e.preventDefault();
@@ -511,7 +511,7 @@ function AppHome() {
             <div className="workspace-content">
               {error && (
                 <div
-                  className="animate-fade-up mb-4 border border-kinexis-risk/20 bg-kinexis-risk/10 px-3.5 py-2.5 text-sm text-kinexis-risk"
+                  className="animate-fade-up mb-4 border border-kinexis-risk/20 bg-kinexis-risk/10 px-4 py-3 text-sm text-kinexis-risk"
                   style={{ borderRadius: "var(--radius-md)" }}
                 >
                   {error}

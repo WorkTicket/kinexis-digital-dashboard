@@ -66,7 +66,7 @@ export function SegmentedControl<T extends string>({
       <div
         role="radiogroup"
         aria-label={ariaLabel}
-        className="flex max-w-full flex-wrap gap-1.5 overflow-x-auto"
+        className="flex max-w-full flex-wrap gap-2 overflow-x-auto"
       >
         {options.map((opt, i) => {
           const active = value === opt.id;
@@ -98,7 +98,7 @@ export function SegmentedControl<T extends string>({
     );
   }
 
-  const item = size === "sm" ? "px-3 py-1.5 text-xs" : "px-3.5 py-2 text-[13px]";
+  const item = size === "sm" ? "px-3 py-2 text-xs" : "px-4 py-2 text-[13px]";
 
   return (
     <div
@@ -121,7 +121,7 @@ export function SegmentedControl<T extends string>({
             tabIndex={active ? 0 : -1}
             onClick={() => onChange(opt.id)}
             onKeyDown={(e) => onKeyDown(e, i)}
-            className={`inline-flex items-center gap-1.5 ${item} motion-micro whitespace-nowrap font-medium ${
+            className={`inline-flex items-center gap-2 ${item} motion-micro whitespace-nowrap font-medium ${
               active
                 ? "bg-surface-light text-ink shadow-panel"
                 : "text-muted hover:text-ink-secondary"

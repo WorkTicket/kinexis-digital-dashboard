@@ -51,13 +51,13 @@ export function recommendNextStep(opts: {
   if (activeTab === "report") {
     return {
       tab: "detect",
-      label: `${STAGE.detect} · review latest Situation`,
+      label: `${STAGE.detect} · next move for this client`,
       reason: STAGE_BLURB.detect,
     };
   }
   return {
     tab: "detect",
-    label: `${STAGE.detect} · start with Situation`,
+    label: `${STAGE.detect} · start with the next move`,
     reason: STAGE_BLURB.detect,
   };
 }

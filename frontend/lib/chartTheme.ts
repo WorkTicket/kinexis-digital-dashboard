@@ -9,9 +9,9 @@ export const CHART = {
   proof: "var(--kinexis-proof)",
   risk: "var(--kinexis-risk)",
   momentum: "var(--kinexis-momentum)",
-  mist: "var(--ink-dim, #6b7080)",
+  mist: "var(--muted)",
   gridOpacity: 0.45,
-  axisFill: "var(--ink-dim, #6b7080)",
+  axisFill: "var(--muted)",
   monoFamily: "var(--font-mono), ui-monospace, monospace",
 } as const;
 
@@ -41,7 +41,7 @@ export function chartPageSpeedTone(score: number): string {
   return CHART.risk;
 }
 
-export const chartRingTrack = "var(--border-subtle, var(--surface-border, #e2e5ea))";
+export const chartRingTrack = "var(--border-subtle, var(--surface-border))";
 
 export const chartAxisTick = {
   fontSize: 11,
@@ -51,7 +51,7 @@ export const chartAxisTick = {
 
 export const chartGridProps = {
   strokeDasharray: "4 4" as const,
-  stroke: "var(--border-subtle, var(--surface-border, #e2e5ea))",
+  stroke: "var(--border-subtle, var(--surface-border))",
   strokeOpacity: CHART.gridOpacity,
   vertical: false,
 };

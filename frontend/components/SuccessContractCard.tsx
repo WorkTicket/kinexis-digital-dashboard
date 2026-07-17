@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { api, SuccessContractPayload } from "@/lib/api";
 import { Panel } from "@/components/ui/Panel";
 import { Badge } from "@/components/ui/Badge";
+import { Stat } from "@/components/ui/Stat";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useToast } from "@/components/Toast";
+import { motion } from "@/lib/motion";
 
 type Props = {
   clientId: number;
@@ -82,7 +84,7 @@ export default function SuccessContractCard({ clientId }: Props) {
   return (
     <div className="animate-fade-up mb-6 space-y-3">
       {showContract && progress && (
-        <Panel>
+        <Panel className={motion.settle}>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <p className="section-label">Success contract</p>
@@ -120,40 +122,38 @@ export default function SuccessContractCard({ clientId }: Props) {
 
       {showBrand && brand && (
         <div className="metric-grid grid-cols-2">
-          <div className="metric-tile">
-            <p className="text-label mb-1.5">Non-brand clicks</p>
-            <p className="text-metric text-lg leading-none">
-              {(brand.current?.non_brand_clicks ?? 0).toLocaleString()}
-            </p>
-            {brand.change_pct?.non_brand_clicks != null && (
-              <p
-                className={`font-mono-data mt-1.5 text-[11px] ${
-                  brand.change_pct.non_brand_clicks >= 0
-                    ? "text-kinexis-proof"
-                    : "text-kinexis-risk"
-                }`}
-              >
-                {brand.change_pct.non_brand_clicks > 0 ? "+" : ""}
-                {brand.change_pct.non_brand_clicks}% vs prior
-              </p>
-            )}
-          </div>
-          <div className="metric-tile">
-            <p className="text-label mb-1.5">Brand clicks</p>
-            <p className="text-metric text-lg leading-none">
-              {(brand.current?.brand_clicks ?? 0).toLocaleString()}
-            </p>
-            {brand.change_pct?.brand_clicks != null && (
-              <p
-                className={`font-mono-data mt-1.5 text-[11px] ${
-                  brand.change_pct.brand_clicks >= 0 ? "text-kinexis-proof" : "text-kinexis-risk"
-                }`}
-              >
-                {brand.change_pct.brand_clicks > 0 ? "+" : ""}
-                {brand.change_pct.brand_clicks}% vs prior
-              </p>
-            )}
-          </div>
+          <Stat
+            label="Non-brand clicks"
+            value={(brand.current?.non_brand_clicks ?? 0).toLocaleString()}
+            hint={
+              brand.change_pct?.non_brand_clicks != null
+                ? `${brand.change_pct.non_brand_clicks > 0 ? "+" : ""}${brand.change_pct.non_brand_clicks}% vs prior`
+                : undefined
+            }
+            tone={
+              brand.change_pct?.non_brand_clicks == null
+                ? "default"
+                : brand.change_pct.non_brand_clicks >= 0
+                  ? "success"
+                  : "danger"
+            }
+          />
+          <Stat
+            label="Brand clicks"
+            value={(brand.current?.brand_clicks ?? 0).toLocaleString()}
+            hint={
+              brand.change_pct?.brand_clicks != null
+                ? `${brand.change_pct.brand_clicks > 0 ? "+" : ""}${brand.change_pct.brand_clicks}% vs prior`
+                : undefined
+            }
+            tone={
+              brand.change_pct?.brand_clicks == null
+                ? "default"
+                : brand.change_pct.brand_clicks >= 0
+                  ? "success"
+                  : "danger"
+            }
+          />
         </div>
       )}
     </div>

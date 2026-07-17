@@ -11,7 +11,7 @@ const root = path.join(__dirname, "..");
 const required = [
   "frontend/lib/glossary.ts",
   "frontend/components/ClientWorkspace.tsx",
-  "frontend/components/LoopStepper.tsx",
+  "frontend/components/shell/StageModeRail.tsx",
   "frontend/components/shell/OfflineBanner.tsx",
   "frontend/public/logo.svg",
 ];

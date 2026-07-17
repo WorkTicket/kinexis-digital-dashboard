@@ -83,9 +83,9 @@ export default function ContentInventory({ metrics }: Props) {
                 key={d}
                 type="button"
                 onClick={() => setPeriodDays(d)}
-                className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all duration-micro ${
+                className={`rounded-md px-3 py-1 text-[11px] font-medium transition-all duration-micro ${
                   periodDays === d
-                    ? "bg-surface-elevated text-ink shadow-sm"
+                    ? "bg-surface-elevated text-ink shadow-panel"
                     : "text-muted hover:text-ink-secondary"
                 }`}
               >
@@ -98,7 +98,7 @@ export default function ContentInventory({ metrics }: Props) {
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             placeholder="Filter pages…"
-            className="placeholder:text-muted-dim w-40 rounded-lg border border-[color:var(--border-subtle)] bg-surface-lighter px-3 py-1.5 text-[12px] text-ink outline-none transition-colors focus:border-kinexis-focus/30"
+            className="placeholder:text-muted-dim w-40 rounded-lg border border-[color:var(--border-subtle)] bg-surface-lighter px-3 py-2 text-[12px] text-ink outline-none transition-colors focus:border-kinexis-focus/30"
           />
         </div>
       </div>
@@ -134,13 +134,13 @@ export default function ContentInventory({ metrics }: Props) {
                 key={page.url}
                 className="border-b border-[color:var(--border-subtle)] transition-colors last:border-0 hover:bg-surface-lighter/40"
               >
-                <td className="max-w-[200px] truncate py-2.5 pr-4">
+                <td className="max-w-[200px] truncate py-3 pr-4">
                   <span className="block truncate text-[12px] text-ink-secondary" title={page.url}>
                     {page.url.replace(/^https?:\/\/[^/]+/, "")}
                   </span>
                 </td>
                 {COLUMNS.map((col) => (
-                  <td key={col.key} className="py-2.5 pr-3 text-right font-mono text-[12px]">
+                  <td key={col.key} className="py-3 pr-3 text-right font-mono text-[12px]">
                     <span className="text-ink-secondary">
                       {formatKpiValue(page[col.key], col.format)}
                     </span>

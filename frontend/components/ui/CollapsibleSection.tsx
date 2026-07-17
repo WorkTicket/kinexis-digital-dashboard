@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useId } from "react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 type Props = {
   label: string;
@@ -9,6 +10,7 @@ type Props = {
   className?: string;
 };
 
+/** Density control for secondary content — chevron + label, not Show/Hide ops chrome. */
 export function CollapsibleSection({
   label,
   defaultOpen = false,
@@ -24,11 +26,12 @@ export function CollapsibleSection({
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="text-muted motion-micro text-xs font-medium hover:text-ink-secondary"
+          className="text-muted motion-micro inline-flex items-center gap-1.5 text-xs font-medium hover:text-ink-secondary"
           aria-expanded={open}
           aria-controls={contentId}
         >
-          {open ? "Hide" : "Show"} {label}
+          {open ? <ChevronDown size={12} strokeWidth={2} /> : <ChevronRight size={12} strokeWidth={2} />}
+          {label}
         </button>
       </div>
       {open && (

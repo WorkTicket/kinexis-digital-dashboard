@@ -181,7 +181,7 @@ export default function BriefsView({ clientId, insights, onTaskCreated }: Props)
       <section className="space-y-3">
         <p className="section-label">Saved briefs</p>
         {loading ? (
-          <LoadingState label="Loading briefs…" variant="spinner" />
+          <LoadingState label="Loading briefs…" variant="cards" />
         ) : loadError ? (
           <ErrorState
             title="Briefs unavailable"
@@ -196,7 +196,7 @@ export default function BriefsView({ clientId, insights, onTaskCreated }: Props)
         ) : (
           briefs.map((brief) => (
             <Panel key={brief.id} padding={false} className="overflow-hidden">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[color:var(--border-subtle)] px-5 py-3.5">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[color:var(--border-subtle)] px-4 py-4">
                 <div className="flex min-w-0 items-center gap-2">
                   <FileText size={16} className="shrink-0 text-kinexis-focus" />
                   <span className="truncate font-medium text-ink">
@@ -206,7 +206,7 @@ export default function BriefsView({ clientId, insights, onTaskCreated }: Props)
                     {brief.status}
                   </Badge>
                 </div>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2">
                   {brief.status === "draft" && (
                     <Button variant="ghost" size="sm" onClick={() => approve(brief.id)}>
                       <CheckCircle2 size={12} /> Approve
@@ -217,7 +217,7 @@ export default function BriefsView({ clientId, insights, onTaskCreated }: Props)
                   </Button>
                 </div>
               </div>
-              <div className="space-y-4 p-5">
+              <div className="space-y-4 p-4">
                 {Array.isArray(brief.title) && brief.title.length > 0 && (
                   <div>
                     <p className="text-muted mb-1.5 text-[12px] font-medium font-semibold">

@@ -216,7 +216,7 @@ export default function ClientSwitcher({
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="listbox"
-        className="command-switcher titlebar-no-drag motion-micro flex max-w-[240px] items-center gap-2 px-3 py-1.5 text-left sm:max-w-[280px]"
+        className="command-switcher titlebar-no-drag motion-micro flex max-w-[240px] items-center gap-2 px-3 py-2 text-left sm:max-w-[280px]"
       >
         {!inClientWorkspace && (
           <LayoutGrid size={14} className="shrink-0 text-ink-dim" strokeWidth={1.75} />
@@ -241,7 +241,7 @@ export default function ClientSwitcher({
                 onGoPortfolio();
                 setOpen(false);
               }}
-              className={`motion-micro flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-[13px] font-medium ${
+              className={`motion-micro flex w-full items-center gap-2 px-3 py-3 text-left text-[13px] font-medium ${
                 !inClientWorkspace
                   ? "bg-kinexis-focus/10 text-kinexis-focus"
                   : "text-ink-secondary hover:bg-[color:var(--hover-fill)] hover:text-ink"
@@ -316,11 +316,11 @@ export default function ClientSwitcher({
                         onSelectClient(client.id);
                         setOpen(false);
                       }}
-                      className="flex min-w-0 flex-1 items-center gap-2 px-3 py-2.5 text-left text-[13px] font-medium text-ink"
+                      className="flex min-w-0 flex-1 items-center gap-2 px-3 py-3 text-left text-[13px] font-medium text-ink"
                     >
                       <span className="truncate">{client.name}</span>
                       {client.priority != null && client.priority >= 2 && (
-                        <span className="shrink-0 rounded bg-kinexis-focus/10 px-1.5 py-0.5 text-[11px] font-bold text-kinexis-focus">
+                        <span className="shrink-0 rounded bg-kinexis-focus/10 px-2 py-0.5 text-[11px] font-bold text-kinexis-focus">
                           P{client.priority}
                         </span>
                       )}
@@ -369,7 +369,7 @@ export default function ClientSwitcher({
                 );
               })}
               {clients.length === 0 && (
-                <p className="px-3 py-8 text-center text-[13px] text-ink-dim">
+                <p className="px-3 py-6 text-center text-[13px] text-ink-dim">
                   Add your first client to begin
                 </p>
               )}

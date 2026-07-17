@@ -35,6 +35,7 @@
       "repo": "kinexis-digital-dashboard",
       "private": false
     },
+    "artifactName": "Kinexis-Setup-${version}.${ext}",
     "win": {
       "target": "nsis",
       "icon": "assets/icon.ico",

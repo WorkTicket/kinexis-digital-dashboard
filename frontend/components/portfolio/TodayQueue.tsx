@@ -56,7 +56,8 @@ export function TodayQueue({
           <div>
             {!hero && <p className="text-[14px] font-semibold text-ink">All clear for today</p>}
             <p className="text-muted text-[13px] leading-relaxed">
-              Review the client directory below, or sync the book to refresh detections.
+              Capacity and the client directory are open below — scan owners and accounts, or sync
+              the book to refresh detections.
             </p>
           </div>
         </div>
@@ -124,8 +125,8 @@ export function TodayQueue({
                 <p className="text-muted mt-0.5 truncate text-[12px]">{item.detail}</p>
               )}
             </div>
-            <div className="flex shrink-0 items-center gap-1.5">
-              {onStartTopAction && (
+            <div className="flex shrink-0 items-center gap-2">
+              {onStartTopAction ? (
                 <Button
                   variant="primary"
                   size="sm"
@@ -134,21 +135,22 @@ export function TodayQueue({
                 >
                   {startingClientId === item.client_id ? "Starting…" : "Start"}
                 </Button>
+              ) : (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() =>
+                    onOpenClient(item.client_id, {
+                      tab: item.cta_tab,
+                      insight_id: item.insight_id,
+                      task_id: item.task_id,
+                    })
+                  }
+                >
+                  {item.cta}
+                  {hero ? <ArrowUpRight size={13} /> : <ChevronRight size={11} />}
+                </Button>
               )}
-              <Button
-                variant="soft"
-                size="sm"
-                onClick={() =>
-                  onOpenClient(item.client_id, {
-                    tab: item.cta_tab,
-                    insight_id: item.insight_id,
-                    task_id: item.task_id,
-                  })
-                }
-              >
-                {item.cta}
-                {hero ? <ArrowUpRight size={13} /> : <ChevronRight size={11} />}
-              </Button>
             </div>
           </li>
         ))}

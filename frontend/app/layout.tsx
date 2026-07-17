@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Script from "next/script";
 import { AppProviders } from "@/components/AppProviders";
+import { THEME_COLOR_DARK, THEME_COLOR_LIGHT } from "@/lib/brandColors";
 
 const jakarta = Plus_Jakarta_Sans({
   weight: ["400", "500", "600", "700"],
@@ -38,8 +39,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#0a0c10" },
-    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
+    { media: "(prefers-color-scheme: dark)", color: THEME_COLOR_DARK },
+    { media: "(prefers-color-scheme: light)", color: THEME_COLOR_LIGHT },
   ],
 };
 

@@ -142,7 +142,7 @@ export default function SyncStatusStrip({
       disabled={syncing}
       className={
         stale || hasError
-          ? "btn-primary inline-flex items-center gap-1.5 !px-2.5 !py-1 px-2.5 py-1 !text-[11px] disabled:opacity-40"
+          ? "btn-primary inline-flex items-center gap-2 !px-3 !py-1 px-3 py-1 !text-[11px] disabled:opacity-40"
           : "btn-ghost !px-2 !py-1"
       }
     >
@@ -166,7 +166,7 @@ export default function SyncStatusStrip({
         {syncBtn}
       </div>
       {showSources && uniqueSources.length > 0 && !compact && (
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-2">
           {uniqueSources.map((ds) => {
             const tone = sourceTone(ds, lastSyncResults);
             const cls =

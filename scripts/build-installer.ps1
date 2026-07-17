@@ -58,6 +58,7 @@ Start-Sleep -Seconds 1
 
 $distDir = "$root\electron\dist"
 if (Test-Path $distDir) {
+    Get-ChildItem $distDir -Filter "Kinexis-Setup*.exe*" -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
     Get-ChildItem $distDir -Filter "Kinexis Setup*.exe*" -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
     if (Test-Path "$distDir\win-unpacked") {
         Remove-Item "$distDir\win-unpacked" -Recurse -Force -ErrorAction SilentlyContinue
@@ -72,18 +73,18 @@ if ($Publish) {
 }
 Pop-Location
 
-$installer = Get-ChildItem "$root\electron\dist" -Filter "Kinexis Setup*.exe" -ErrorAction SilentlyContinue |
+$installer = Get-ChildItem "$root\electron\dist" -Filter "Kinexis-Setup*.exe" -ErrorAction SilentlyContinue |
     Where-Object { $_.Name -notmatch "unpacked|blockmap" } |
     Sort-Object LastWriteTime -Descending |
     Select-Object -First 1
 if ($installer) {
-    Write-Host "`nDone! Installer (use THIS file - do not reuse an older Setup.exe):" -ForegroundColor Green
+    Write-Host "`nDone! Installer (canonical name — use THIS file):" -ForegroundColor Green
     Write-Host $installer.FullName
     Write-Host ("Built: {0}  Size: {1:N0} bytes" -f $installer.LastWriteTime, $installer.Length)
     if ($Publish) {
         Write-Host "Published to GitHub Releases - users will auto-update to this version" -ForegroundColor Green
     }
 } else {
-    Write-Host "`nBuild finished but no Setup.exe found. Check electron\dist" -ForegroundColor Red
+    Write-Host "`nBuild finished but no Kinexis-Setup*.exe found. Check electron\dist" -ForegroundColor Red
     exit 1
 }

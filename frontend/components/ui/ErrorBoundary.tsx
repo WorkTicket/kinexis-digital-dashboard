@@ -34,7 +34,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       if (this.props.fallback) return this.props.fallback;
       return (
-        <div className="panel animate-fade-up mx-auto my-12 max-w-lg p-10 text-center">
+        <div className="panel animate-fade-up mx-auto my-12 max-w-lg p-6 text-center">
           <div
             className="mx-auto mb-5 flex h-14 w-14 items-center justify-center border border-kinexis-risk/15 bg-kinexis-risk/[0.07] text-kinexis-risk"
             style={{ borderRadius: "var(--radius-lg)" }}

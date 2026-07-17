@@ -14,12 +14,11 @@ const shortcuts: { section: string; items: Shortcut[] }[] = [
     items: [
       { keys: ["Ctrl", "K"], label: "Command palette" },
       { keys: ["Ctrl", ","], label: "Settings" },
-      { keys: ["1"], label: "Detect (Situation)" },
-      { keys: ["2"], label: "Charts" },
-      { keys: ["3"], label: "Prescribe (Fix queue)" },
-      { keys: ["4"], label: "Execute (Work queue)" },
-      { keys: ["5"], label: "Prove (Impact)" },
-      { keys: ["6"], label: "Report" },
+      { keys: ["1"], label: "Detect (Overview)" },
+      { keys: ["2"], label: "Prescribe (Fix queue)" },
+      { keys: ["3"], label: "Execute (Work queue)" },
+      { keys: ["4"], label: "Prove (Impact)" },
+      { keys: ["5"], label: "Report (client pack)" },
       { keys: ["?"], label: "Keyboard shortcuts" },
     ],
   },
@@ -37,8 +36,8 @@ const shortcuts: { section: string; items: Shortcut[] }[] = [
       { keys: ["Detect"], label: "See what\u2019s wrong \u2192 Open Fix queue" },
       { keys: ["Prescribe"], label: "Assign here (only place) \u2192 Opens Execute" },
       { keys: ["Execute"], label: "Complete work \u2192 Snapshot saved for Prove" },
-      { keys: ["Prove"], label: "Recheck impact \u2192 Causal verdict" },
-      { keys: ["Report"], label: "Generate \u2192 Download PDF" },
+      { keys: ["Prove"], label: "Recheck impact \u2192 Pack wins into Report" },
+      { keys: ["Report"], label: "Loop deliverable \u2192 Generate / Download PDF" },
     ],
   },
 ];
@@ -114,7 +113,7 @@ export function KeyboardShortcuts({ open, onClose }: Props) {
         </div>
 
         <p className="text-muted mt-5 border-t border-[color:var(--border-subtle)] pt-4 text-center text-[11px] leading-relaxed">
-          Tab shortcuts require a client selected. Keys 1\u20136 navigate the proof loop.
+          Tab shortcuts require a client selected. Keys 1\u20134 walk the loop; 5 opens Report.
         </p>
       </div>
     </div>

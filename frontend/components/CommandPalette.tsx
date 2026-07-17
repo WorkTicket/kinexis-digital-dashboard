@@ -45,14 +45,19 @@ type Props = {
   onCopyDeepLink?: () => void;
 };
 
-const CLIENT_TABS = [
-  { id: "detect", label: "Detect · Situation", icon: <Search size={14} /> },
+const LOOP_STAGES = [
+  { id: "detect", label: "Detect · Overview", icon: <Search size={14} /> },
   { id: "levers", label: "Detect · Problems", icon: <Zap size={14} /> },
   { id: "prescribe", label: "Prescribe · Fix queue", icon: <ListChecks size={14} /> },
   { id: "execute", label: "Execute", icon: <ClipboardCheck size={14} /> },
   { id: "prove", label: "Prove", icon: <Target size={14} /> },
-  { id: "report", label: "Report", icon: <FileText size={14} /> },
 ];
+
+const REPORT_DESTINATION = {
+  id: "report",
+  label: "Report · Client pack",
+  icon: <FileText size={14} />,
+};
 
 export default function CommandPalette({
   open,
@@ -97,21 +102,29 @@ export default function CommandPalette({
     ];
 
     if (hasClient) {
-      for (const tab of CLIENT_TABS) {
+      for (const tab of LOOP_STAGES) {
         items.push({
           id: `tab-${tab.id}`,
           label: tab.label,
-          hint: "Current client",
-          group: "Pages",
+          hint: "Loop stage",
+          group: "Loop",
           icon: tab.icon,
           run: () => onNavigate(tab.id),
         });
       }
       items.push({
+        id: `tab-${REPORT_DESTINATION.id}`,
+        label: REPORT_DESTINATION.label,
+        hint: "Arrive here after Prove",
+        group: "Deliverable",
+        icon: REPORT_DESTINATION.icon,
+        run: () => onNavigate(REPORT_DESTINATION.id),
+      });
+      items.push({
         id: "nav-rankings",
         label: "Google rankings",
         hint: "Detect · keyword positions",
-        group: "Pages",
+        group: "Loop",
         icon: <TrendingUp size={14} />,
         run: () => onNavigate("rankings"),
       });
@@ -159,8 +172,8 @@ export default function CommandPalette({
         items.push({
           id: "action-report-generate",
           label: clientName ? `Generate month report for ${clientName}` : "Generate month report",
-          hint: "Report library · builds & saves",
-          group: "Actions",
+          hint: "Builds & saves the loop deliverable",
+          group: "Deliverable",
           icon: <FileText size={14} />,
           run: () => (onGenerateReport || onExportReport)?.(),
         });
@@ -170,7 +183,7 @@ export default function CommandPalette({
           id: "action-report",
           label: "Open report library",
           hint: "Saved months · PDF export",
-          group: "Actions",
+          group: "Deliverable",
           icon: <FileText size={14} />,
           run: () => onExportReport(),
         });
@@ -178,7 +191,7 @@ export default function CommandPalette({
       if (onAssignTopFix) {
         items.push({
           id: "action-assign-fix",
-          label: "Assign top fix to Cursor",
+          label: "Assign top fix",
           hint: "Create task from highest-ranked insight",
           group: "Actions",
           icon: <ClipboardCheck size={14} />,
@@ -310,7 +323,7 @@ export default function CommandPalette({
         aria-label="Command palette"
         className="panel-elevated animate-scale-in w-full max-w-xl overflow-hidden shadow-dropdown"
       >
-        <div className="flex items-center gap-3 border-b border-[color:var(--border-subtle)] bg-surface-lighter/40 px-4 py-3.5">
+        <div className="flex items-center gap-3 border-b border-[color:var(--border-subtle)] bg-surface-lighter/40 px-4 py-4">
           <Search size={16} className="text-muted shrink-0" />
           <input
             ref={inputRef}

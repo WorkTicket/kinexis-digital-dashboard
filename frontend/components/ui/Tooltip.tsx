@@ -92,7 +92,7 @@ export function Tooltip({ content, children, side = "top", delay = 400, classNam
           onMouseLeave={hide}
         >
           <div
-            className="max-w-[240px] whitespace-normal px-2.5 py-1.5 text-[11px] font-medium leading-snug text-ink shadow-dropdown"
+            className="max-w-[240px] whitespace-normal px-3 py-2 text-[11px] font-medium leading-snug text-ink shadow-dropdown"
             style={{
               borderRadius: "var(--radius-sm)",
               background: "var(--surface-elevated)",

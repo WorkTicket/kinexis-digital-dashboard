@@ -157,10 +157,10 @@ export default function PageSpeedCard({ metrics }: Props) {
             <p className="text-muted font-mono-data mb-3 truncate text-xs" title={url}>
               {url}
             </p>
-            <div className="flex flex-col flex-wrap gap-6 sm:flex-row sm:items-center sm:gap-8">
+            <div className="flex flex-col flex-wrap gap-6 sm:flex-row sm:items-center sm:gap-6">
               <ScoreRing score={urlScores.mobile ?? null} label="Mobile" />
               <ScoreRing score={urlScores.desktop ?? null} label="Desktop" />
-              <div className="grid min-w-0 grid-cols-3 gap-3 sm:gap-5">
+              <div className="grid min-w-0 grid-cols-3 gap-3 sm:gap-4">
                 {(
                   [
                     [

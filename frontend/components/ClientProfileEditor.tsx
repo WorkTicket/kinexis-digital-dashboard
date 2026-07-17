@@ -212,7 +212,7 @@ export default function ClientProfileEditor({
 
       {section === "context" && (
         <>
-          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <Input
               label="Owner"
               value={owner}
@@ -336,7 +336,7 @@ export default function ClientProfileEditor({
                 className="!py-2 !text-xs"
                 hint="e.g. paid.conversions, hubspot.leads, ga4.key_events"
               />
-              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <Input
                   label="Target lift %"
                   value={form.success_contract.target_delta_pct}
@@ -383,7 +383,7 @@ export default function ClientProfileEditor({
           <p className="text-xs leading-relaxed text-ink-dim">
             Advanced — tune Detect rules for this vertical. Leave defaults if unsure.
           </p>
-          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {(
               [
                 [

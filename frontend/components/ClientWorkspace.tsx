@@ -33,7 +33,7 @@ import { Panel } from "@/components/ui/Panel";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { Badge } from "@/components/ui/Badge";
 import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
-import { CheckCircle2, Trash2, ChevronDown } from "lucide-react";
+import { CheckCircle2, Trash2, ChevronDown, ArrowRight } from "lucide-react";
 import type { ShellTab, PrescribeSegment } from "@/hooks/useShellNavigation";
 import type { DetectSegment, ExploreMode } from "@/hooks/useShellNavigation";
 import { STAGE_BLURB } from "@/lib/glossary";
@@ -51,9 +51,9 @@ type DigDeeperPanel =
   | "campaigns"
   | "learning";
 
-const overviewFallback = <LoadingState label="Loading overview" variant="spinner" />;
-const reportFallback = <LoadingState label="Loading report library..." variant="spinner" />;
-const funnelFallback = <LoadingState label="Loading funnel..." variant="spinner" />;
+const overviewFallback = <LoadingState label="Loading overview" variant="overview" />;
+const reportFallback = <LoadingState label="Loading report library..." variant="cards" />;
+const funnelFallback = <LoadingState label="Loading funnel..." variant="cards" />;
 
 const OverviewView = dynamic(() => import("@/components/OverviewView"), {
   loading: () => overviewFallback,
@@ -268,11 +268,11 @@ function ProveImpactList({
   }, [impacts]);
 
   if (batchLoading && Object.keys(impacts).length === 0) {
-    return <LoadingState label="Loading impact..." variant="spinner" />;
+    return <LoadingState label="Loading impact..." variant="cards" />;
   }
 
   return (
-    <>
+    <div className="animate-state-settle">
       {cumulative.complete > 0 && (
         <div className="mb-5 flex flex-wrap items-end gap-x-6 gap-y-2 border-b border-[color:var(--border-subtle)] pb-4">
           <div>
@@ -344,9 +344,6 @@ function ProveImpactList({
                   <div className="flex min-w-0 items-center gap-2">
                     <CheckCircle2 size={15} className="shrink-0 text-kinexis-proof" />
                     <span className="truncate text-sm font-semibold text-ink">{title}</span>
-                    <span className="font-mono-data shrink-0 text-[11px] text-ink-dim">
-                      #{task.id}
-                    </span>
                     {outcome && (
                       <span
                         className={`text-[11px] font-bold uppercase tracking-wide ${verdictTone}`}
@@ -383,18 +380,18 @@ function ProveImpactList({
       <ConfirmDialog
         open={!!deleteTarget}
         title="Delete work item"
-        description={
-          deleteTarget
-            ? `Permanently remove completed work #${deleteTarget.id}? Impact data will also be lost.`
-            : ""
-        }
+          description={
+            deleteTarget
+              ? `Permanently remove this completed win? Impact data will also be lost.`
+              : ""
+          }
         confirmLabel={deleting ? "Deleting..." : "Delete"}
         danger
         busy={deleting}
         onConfirm={() => void handleDelete()}
         onCancel={() => !deleting && setDeleteTarget(null)}
       />
-    </>
+    </div>
   );
 }
 
@@ -613,7 +610,10 @@ export default function ClientWorkspace({
                 {Object.entries(byType)
                   .slice(0, 9)
                   .map(([type, count]) => (
-                    <div key={type} className="panel flex items-center justify-between !p-2.5">
+                    <div
+                      key={type}
+                      className="flex items-center justify-between rounded-md border border-[color:var(--border-subtle)] bg-surface-lighter/40 p-3"
+                    >
                       <span className="truncate text-xs text-ink-secondary">
                         {type.replace(/_/g, " ")}
                       </span>
@@ -744,12 +744,11 @@ export default function ClientWorkspace({
             <div className="flex flex-wrap items-center gap-2">
               <Badge tone="signal">{impactWindowDays}+ day window</Badge>
               <Button variant="soft" size="sm" onClick={() => setActiveTab("report")}>
-                Pack wins into report
+                Pack into Report
+                <ArrowRight size={13} />
               </Button>
             </div>
           </div>
-          <SuccessContractCard clientId={selectedClientId} />
-          <ActiveTestsPanel clientId={selectedClientId} />
           {doneTasks.length === 0 ? (
             <EmptyState
               title="No completed work yet"
@@ -769,6 +768,10 @@ export default function ClientWorkspace({
               onDeleteTask={onDeleteTask}
             />
           )}
+          <CollapsibleSection label="Success contract & active tests" defaultOpen={false}>
+            <SuccessContractCard clientId={selectedClientId} />
+            <ActiveTestsPanel clientId={selectedClientId} />
+          </CollapsibleSection>
         </div>
       )}
 

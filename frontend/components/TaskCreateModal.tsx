@@ -37,7 +37,7 @@ export default function TaskCreateModal({
         role="dialog"
         aria-modal="true"
         aria-label="Create work item"
-        className="panel-elevated animate-scale-in w-full max-w-md p-5 shadow-panel-lg"
+        className="panel-elevated animate-scale-in w-full max-w-md p-4 shadow-panel-lg"
       >
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>

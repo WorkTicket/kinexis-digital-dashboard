@@ -7,6 +7,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { Button } from "@/components/ui/Button";
+import { Stat } from "@/components/ui/Stat";
+import { Panel } from "@/components/ui/Panel";
 import { CHART } from "@/lib/chartTheme";
 
 type Props = {
@@ -53,7 +55,7 @@ export default function FunnelView({ clientId, onSync, onPrescribeLeak }: Props)
   }, [load]);
 
   if (loading) {
-    return <LoadingState label="Loading funnel…" variant="spinner" className="animate-fade-up" />;
+    return <LoadingState label="Loading funnel…" variant="cards" className="animate-fade-up" />;
   }
 
   if (error) {
@@ -159,42 +161,46 @@ export default function FunnelView({ clientId, onSync, onPrescribeLeak }: Props)
 
       {totals.leads || totals.revenue ? (
         <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <div className="panel !p-3">
-            <span className="text-muted text-[11px] font-medium">Cost per lead</span>
-            <p className="font-mono-data mt-0.5 text-[15px] font-semibold text-ink">
-              {(totals.leads || 0) > 0 && totals.ad_cost
+          <Stat
+            label="Cost per lead"
+            value={
+              (totals.leads || 0) > 0 && totals.ad_cost
                 ? `$${Math.round(totals.ad_cost / totals.leads!).toLocaleString()}`
-                : "—"}
-            </p>
-          </div>
-          <div className="panel !p-3">
-            <span className="text-muted text-[11px] font-medium">Cost per click</span>
-            <p className="font-mono-data mt-0.5 text-[15px] font-semibold text-ink">
-              {(totals.paid_clicks || 0) > 0 && totals.ad_cost
+                : "—"
+            }
+            className="!min-w-0 !p-3 [&_.text-metric]:!mt-1 [&_.text-metric]:!text-[0.95rem]"
+          />
+          <Stat
+            label="Cost per click"
+            value={
+              (totals.paid_clicks || 0) > 0 && totals.ad_cost
                 ? `$${(totals.ad_cost / totals.paid_clicks!).toFixed(2)}`
-                : "—"}
-            </p>
-          </div>
-          <div className="panel !p-3">
-            <span className="text-muted text-[11px] font-medium">ROAS</span>
-            <p className="font-mono-data mt-0.5 text-[15px] font-semibold text-ink">
-              {totals.ad_cost && (totals.revenue || 0) > 0
+                : "—"
+            }
+            className="!min-w-0 !p-3 [&_.text-metric]:!mt-1 [&_.text-metric]:!text-[0.95rem]"
+          />
+          <Stat
+            label="ROAS"
+            value={
+              totals.ad_cost && (totals.revenue || 0) > 0
                 ? `${(totals.revenue! / totals.ad_cost!).toFixed(1)}x`
-                : "—"}
-            </p>
-          </div>
-          <div className="panel !p-3">
-            <span className="text-muted text-[11px] font-medium">Rev / session</span>
-            <p className="font-mono-data mt-0.5 text-[15px] font-semibold text-ink">
-              {(totals.sessions || 0) > 0 && (totals.revenue || 0) > 0
+                : "—"
+            }
+            className="!min-w-0 !p-3 [&_.text-metric]:!mt-1 [&_.text-metric]:!text-[0.95rem]"
+          />
+          <Stat
+            label="Rev / session"
+            value={
+              (totals.sessions || 0) > 0 && (totals.revenue || 0) > 0
                 ? `$${(totals.revenue! / totals.sessions!).toFixed(2)}`
-                : "—"}
-            </p>
-          </div>
+                : "—"
+            }
+            className="!min-w-0 !p-3 [&_.text-metric]:!mt-1 [&_.text-metric]:!text-[0.95rem]"
+          />
         </div>
       ) : null}
 
-      <div className="panel mb-4 p-5 sm:p-6">
+      <Panel className="mb-4" padding="lg">
         <div className="space-y-5">
           {stageConfigs.map((stage, idx) => (
             <div key={stage.label}>
@@ -249,7 +255,7 @@ export default function FunnelView({ clientId, onSync, onPrescribeLeak }: Props)
             </div>
           ))}
         </div>
-      </div>
+      </Panel>
 
       {leaks.length > 0 && (
         <div className="space-y-2">
@@ -258,7 +264,7 @@ export default function FunnelView({ clientId, onSync, onPrescribeLeak }: Props)
             Work top-down. The largest drop is usually the highest-ROI fix.
           </p>
           {leaks.map((leak, idx) => (
-            <div key={idx} className="panel p-4">
+            <Panel key={idx} padding="md">
               <div className="flex items-start gap-3">
                 <div
                   className="font-mono-data flex h-6 w-6 shrink-0 items-center justify-center border border-kinexis-risk/30 text-[11px] font-medium text-kinexis-risk"
@@ -285,7 +291,7 @@ export default function FunnelView({ clientId, onSync, onPrescribeLeak }: Props)
                     {leak.cause}
                   </p>
                   <div
-                    className="mt-2.5 border border-[color:var(--border-subtle)] px-3 py-2.5"
+                    className="mt-2.5 border border-[color:var(--border-subtle)] px-3 py-3"
                     style={{ borderRadius: "var(--radius-md)" }}
                   >
                     <p className="text-label mb-1 text-kinexis-focus">Do this</p>
@@ -310,18 +316,18 @@ export default function FunnelView({ clientId, onSync, onPrescribeLeak }: Props)
                   </div>
                 </div>
               </div>
-            </div>
+            </Panel>
           ))}
         </div>
       )}
 
       {(rates.overall_conversion_pct ?? 0) > 0 && (
-        <div className="panel mt-4 flex items-center justify-between p-4">
+        <Panel className="mt-4 flex items-center justify-between" padding="md">
           <span className="text-muted text-xs">Overall · impression → conversion</span>
           <span className="text-metric text-lg text-kinexis-focus">
             {(rates.overall_conversion_pct ?? 0).toFixed(2)}%
           </span>
-        </div>
+        </Panel>
       )}
     </div>
   );

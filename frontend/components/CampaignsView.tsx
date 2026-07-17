@@ -6,6 +6,7 @@ import { Panel } from "@/components/ui/Panel";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Stat } from "@/components/ui/Stat";
 import { Megaphone, PauseCircle, TrendingDown } from "lucide-react";
 
 type CampaignRow = {
@@ -143,42 +144,28 @@ export default function CampaignsView({ clientId, onPrescribe }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <div className="panel !p-3">
-          <span className="text-muted text-[11px]">Campaigns (14d)</span>
-          <p className="font-mono-data mt-0.5 text-[15px] font-semibold text-ink">
-            {campaigns.length}
-          </p>
-        </div>
-        <div className="panel !p-3">
-          <span className="text-muted text-[11px]">Spend</span>
-          <p className="font-mono-data mt-0.5 text-[15px] font-semibold text-ink">
-            ${totalSpend.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-          </p>
-        </div>
-        <div className="panel !p-3">
-          <span className="text-muted text-[11px]">Conversions</span>
-          <p className="font-mono-data mt-0.5 text-[15px] font-semibold text-ink">
-            {totalConv.toLocaleString(undefined, { maximumFractionDigits: 1 })}
-          </p>
-        </div>
-        <div className="panel !p-3">
-          <span className="text-muted text-[11px]">Weak (spend, 0 conv)</span>
-          <p
-            className={`font-mono-data mt-0.5 text-[15px] font-semibold ${
-              weak.length ? "text-kinexis-risk" : "text-kinexis-proof"
-            }`}
-          >
-            {weak.length}
-          </p>
-        </div>
+      <div className="metric-grid grid-cols-2 sm:grid-cols-4">
+        <Stat label="Campaigns (14d)" value={campaigns.length} />
+        <Stat
+          label="Spend"
+          value={`$${totalSpend.toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
+        />
+        <Stat
+          label="Conversions"
+          value={totalConv.toLocaleString(undefined, { maximumFractionDigits: 1 })}
+        />
+        <Stat
+          label="Weak (spend, 0 conv)"
+          value={weak.length}
+          tone={weak.length ? "danger" : "success"}
+        />
       </div>
 
       {weak.length > 0 && (
         <Panel padding="md" className="border-kinexis-risk/25 bg-kinexis-risk/5">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="flex items-center gap-1.5 text-sm font-medium text-ink">
+              <p className="flex items-center gap-2 text-sm font-medium text-ink">
                 <PauseCircle size={14} className="text-kinexis-risk" />
                 Pause candidates
               </p>
@@ -198,7 +185,7 @@ export default function CampaignsView({ clientId, onPrescribe }: Props) {
 
       {(searchTermWaste.length > 0 || placementWaste.length > 0) && (
         <Panel padding="md" className="border-kinexis-risk/20 bg-kinexis-risk/5">
-          <p className="flex items-center gap-1.5 text-sm font-medium text-ink">
+          <p className="flex items-center gap-2 text-sm font-medium text-ink">
             <TrendingDown size={14} className="text-kinexis-risk" />
             Waste surfaces
           </p>
@@ -234,7 +221,7 @@ export default function CampaignsView({ clientId, onPrescribe }: Props) {
 
       <Panel padding={false}>
         <div className="border-b border-[color:var(--border-subtle)] px-4 py-3">
-          <p className="section-label flex items-center gap-1.5">
+          <p className="section-label flex items-center gap-2">
             <Megaphone size={12} /> Campaign performance
           </p>
         </div>

@@ -1,5 +1,7 @@
 "use client";
 
+import { Panel } from "@/components/ui/Panel";
+
 export type NarrativePriority = {
   priority: number;
   title: string;
@@ -100,9 +102,11 @@ function severityTone(severity: string) {
 type Props = {
   content: string;
   className?: string;
+  /** Softer bordered cards when rendered inside a Panel (e.g. report executive summary). */
+  nested?: boolean;
 };
 
-export default function AnalystNotes({ content, className = "" }: Props) {
+export default function AnalystNotes({ content, className = "", nested = false }: Props) {
   const narrative = parseNarrative(content);
 
   if (narrative.priorities.length > 0) {
@@ -111,47 +115,62 @@ export default function AnalystNotes({ content, className = "" }: Props) {
         {narrative.headline && (
           <p className="text-sm leading-relaxed text-ink-secondary">{narrative.headline}</p>
         )}
-        <ol className="space-y-3">
-          {narrative.priorities.map((p) => (
-            <li
-              key={`${p.priority}-${p.title}`}
-              className="border border-[color:var(--border-subtle)] bg-surface p-4"
-              style={{ borderRadius: "var(--radius-lg)" }}
-            >
-              <div className="mb-2 flex flex-wrap items-center gap-2">
-                <span className="font-mono-data text-muted text-[11px]">#{p.priority}</span>
-                <h4 className="min-w-0 flex-1 text-[13px] font-medium text-ink">{p.title}</h4>
-                <span className={`badge border ${severityTone(p.severity)}`}>{p.severity}</span>
-              </div>
-              {p.success_metric && (
-                <p className="mb-2 text-[11px] font-medium tracking-wide text-kinexis-focus">
-                  Moves {p.success_metric}
-                </p>
-              )}
-              {p.issue && (
-                <p className="mb-3 text-[13px] leading-relaxed text-ink-secondary">{p.issue}</p>
-              )}
-              {p.actions.length > 0 && (
-                <ul className="mb-3 space-y-1.5">
-                  {p.actions.map((a) => (
-                    <li key={a} className="flex gap-2 text-[13px] leading-relaxed text-ink">
-                      <span className="text-muted font-mono-data mt-0.5 shrink-0 text-[11px]">
-                        →
-                      </span>
-                      <span>{a}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {p.measure && (
-                <p className="text-muted text-xs leading-relaxed">
-                  <span className="font-medium text-ink-dim">Measure: </span>
-                  {p.measure}
-                </p>
-              )}
-            </li>
-          ))}
-        </ol>
+        <div className="space-y-3">
+          {narrative.priorities.map((p) => {
+            const card = (
+              <>
+                <div className="mb-2 flex flex-wrap items-center gap-2">
+                  <span className="font-mono-data text-muted text-[11px]">#{p.priority}</span>
+                  <h4 className="min-w-0 flex-1 text-[13px] font-medium text-ink">{p.title}</h4>
+                  <span className={`badge border ${severityTone(p.severity)}`}>{p.severity}</span>
+                </div>
+                {p.success_metric && (
+                  <p className="mb-2 text-[11px] font-medium tracking-wide text-kinexis-focus">
+                    Moves {p.success_metric}
+                  </p>
+                )}
+                {p.issue && (
+                  <p className="mb-3 text-[13px] leading-relaxed text-ink-secondary">{p.issue}</p>
+                )}
+                {p.actions.length > 0 && (
+                  <ul className="mb-3 space-y-1.5">
+                    {p.actions.map((a) => (
+                      <li key={a} className="flex gap-2 text-[13px] leading-relaxed text-ink">
+                        <span className="text-muted font-mono-data mt-0.5 shrink-0 text-[11px]">
+                          →
+                        </span>
+                        <span>{a}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {p.measure && (
+                  <p className="text-muted text-xs leading-relaxed">
+                    <span className="font-medium text-ink-dim">Measure: </span>
+                    {p.measure}
+                  </p>
+                )}
+              </>
+            );
+
+            if (nested) {
+              return (
+                <div
+                  key={`${p.priority}-${p.title}`}
+                  className="rounded-md border border-[color:var(--border-subtle)] bg-surface-lighter/40 p-4"
+                >
+                  {card}
+                </div>
+              );
+            }
+
+            return (
+              <Panel key={`${p.priority}-${p.title}`} padding="md">
+                {card}
+              </Panel>
+            );
+          })}
+        </div>
       </div>
     );
   }

@@ -78,7 +78,7 @@ def portfolio_today(
             "client_name": client.name,
             "title": f"Off contract: {label}",
             "detail": detail,
-            "cta": "Review Situation",
+            "cta": "Open Detect",
             "cta_tab": "detect",
             "effort": "high",
         })

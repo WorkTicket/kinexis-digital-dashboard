@@ -8,15 +8,12 @@ import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { Panel } from "@/components/ui/Panel";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
 import { Input } from "@/components/ui/Input";
 import {
   ArrowRight,
-  ChevronDown,
-  ChevronUp,
-  ClipboardList,
   Lightbulb,
   Plus,
-  Target,
   Zap,
   Clock,
   TrendingUp,
@@ -42,7 +39,7 @@ function formatRoiBadge(
     const pct = Math.round(stats.win_rate * 100);
     const lift = stats.median_lift_pct != null ? ` · median +${stats.median_lift_pct}%` : "";
     return {
-      label: `Measured: ${pct}% win rate (n=${stats.total})${lift}`,
+      label: `Measured: ${pct}% win rate · ${stats.total} fixes${lift}`,
       measured: true,
     };
   }
@@ -86,7 +83,10 @@ function confidenceMeta(insight: Insight): {
 } | null {
   const tier = (insight.confidence_tier || "").toLowerCase();
   if (!tier) return null;
-  const n = insight.sample_size != null ? ` · n=${insight.sample_size.toLocaleString()}` : "";
+  const n =
+    insight.sample_size != null
+      ? ` · ${insight.sample_size.toLocaleString()} samples`
+      : "";
   const caveat = insight.algorithmic_caveat ? " · overlaps a known algorithm update" : "";
   const title = `Evidence confidence${n}${caveat}`;
   if (tier === "high") return { label: "High conf", tone: "proof", title };
@@ -493,8 +493,6 @@ function GrowthPlaysPanel({
   onCreateGrowthTask?: (play: HealthImprovement) => void;
   id?: string;
 }) {
-  const [expanded, setExpanded] = useState<string | null>(improvements[0]?.id ?? null);
-
   return (
     <div id={id} className="animate-fade-up animate-fade-up-delay-2 mb-8">
       <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
@@ -512,40 +510,31 @@ function GrowthPlaysPanel({
         )}
       </div>
       <div className="space-y-2">
-        {improvements.map((play, idx) => {
-          const open = expanded === play.id;
-          return (
-            <div key={play.id} className="panel overflow-hidden !p-0">
-              <button
-                type="button"
-                className="flex w-full items-start gap-3 p-4 text-left hover:bg-surface-lighter/60"
-                onClick={() => setExpanded(open ? null : play.id)}
-              >
-                <span className="font-mono-data flex h-7 w-7 shrink-0 items-center justify-center bg-surface-lighter text-[12px] font-semibold text-kinexis-focus">
-                  {idx + 1}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-[14px] font-medium text-ink">{play.title}</p>
-                    <Badge tone="signal">{play.effort}</Badge>
-                    <span className="text-muted text-[11px]">{play.metric}</span>
-                  </div>
-                  <p className="text-muted mt-1 text-[12px] leading-relaxed">{play.detail}</p>
-                  {play.estimatedROI && (
-                    <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-kinexis-proof">
-                      <TrendingUp size={11} />
-                      {formatTypicalRoi(play.estimatedROI)}
-                    </p>
-                  )}
+        {improvements.map((play, idx) => (
+          <div key={play.id} className="panel motion-micro overflow-hidden p-4">
+            <div className="flex items-start gap-3">
+              <span className="font-mono-data flex h-7 w-7 shrink-0 items-center justify-center bg-surface-lighter text-[12px] font-semibold text-kinexis-focus">
+                {idx + 1}
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-[14px] font-medium text-ink">{play.title}</p>
+                  <Badge tone="signal">{play.effort}</Badge>
+                  <span className="text-muted text-[11px]">{play.metric}</span>
                 </div>
-                <ChevronDown
-                  size={14}
-                  className={`text-muted mt-1 shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
-                />
-              </button>
-              {open && (
-                <div className="border-t border-[color:var(--border-subtle)] px-4 pb-4 pt-3">
-                  <ol className="mb-3 list-decimal space-y-1.5 pl-5">
+                <p className="text-muted mt-1 text-[12px] leading-relaxed">{play.detail}</p>
+                {play.estimatedROI && (
+                  <p className="mt-2 flex items-center gap-1 text-[11px] font-medium text-kinexis-proof">
+                    <TrendingUp size={11} />
+                    {formatTypicalRoi(play.estimatedROI)}
+                  </p>
+                )}
+                <CollapsibleSection
+                  label={`${play.steps.length} step${play.steps.length === 1 ? "" : "s"}`}
+                  defaultOpen={idx === 0}
+                  className="!mt-2"
+                >
+                  <ol className="mb-3 list-decimal space-y-2 pl-5">
                     {play.steps.map((step, si) => (
                       <li key={si} className="text-[12px] leading-relaxed text-ink-dim">
                         {step}
@@ -557,11 +546,11 @@ function GrowthPlaysPanel({
                       <Zap size={11} /> Assign
                     </Button>
                   )}
-                </div>
-              )}
+                </CollapsibleSection>
+              </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -582,8 +571,6 @@ export default function NextSteps({
   onCreateGrowthTask,
   id,
 }: Props) {
-  const [expandedChecklist, setExpandedChecklist] = useState<number | null>(null);
-  const [showAll, setShowAll] = useState(false);
   const [kindFilter, setKindFilter] = useState<KindFilter>("problem");
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
   const [quickFilter, setQuickFilter] = useState<QuickFilter>("all");
@@ -732,8 +719,7 @@ export default function NextSteps({
     openProblems === 0
   );
 
-  const visible = showAll ? unresolved : unresolved.slice(0, 5);
-  const hiddenCount = Math.max(0, unresolved.length - 5);
+  const visible = unresolved;
 
   const toggleSelected = (insightId: number) => {
     setSelected((prev) => {
@@ -819,8 +805,6 @@ export default function NextSteps({
     return mins <= 60 && (i.priority_score ?? 0) >= 40;
   }).length;
 
-  const top3 = unresolved.slice(0, 3);
-
   return (
     <div id={id} className="animate-fade-up animate-fade-up-delay-2 mb-8">
       {assignBlocked && (
@@ -834,177 +818,78 @@ export default function NextSteps({
         </Panel>
       )}
       {showGrowthPlays && apiTopPlay && apiHealthScore != null && (
-        <div className="mb-4">
+        <CollapsibleSection label="Growth plays" defaultOpen={false} className="!mt-0">
           <GrowthPlaysPanel
             improvements={[apiTopPlay]}
             healthScore={apiHealthScore}
             onOpenActions={onOpenActions}
             onCreateGrowthTask={onCreateGrowthTask}
           />
-        </div>
+        </CollapsibleSection>
       )}
-      {/* Command strip */}
-      <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <div className="panel !p-3">
-          <span className="text-muted text-[11px] font-medium">Total open</span>
-          <p className="font-mono-data mt-0.5 text-[15px] font-semibold text-ink">{totalOpen}</p>
+      <CollapsibleSection label="Queue summary" defaultOpen={false} className="!mt-0">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px]">
+          <span>
+            <span className="text-muted">Open </span>
+            <span className="font-mono-data font-semibold text-ink">{totalOpen}</span>
+          </span>
+          <span>
+            <span className="text-muted">Avg priority </span>
+            <span
+              className={`font-mono-data font-semibold ${avgScore >= 60 ? "text-kinexis-risk" : avgScore >= 40 ? "text-kinexis-signal" : "text-ink"}`}
+            >
+              {avgScore > 0 ? Math.round(avgScore) : "\u2014"}
+            </span>
+          </span>
+          <span>
+            <span className="text-muted">High severity </span>
+            <span
+              className={`font-mono-data font-semibold ${highCount > 0 ? "text-kinexis-risk" : "text-kinexis-proof"}`}
+            >
+              {highCount}
+            </span>
+          </span>
+          <span>
+            <span className="text-muted">Quick wins </span>
+            <span
+              className={`font-mono-data font-semibold ${quickWins > 0 ? "text-kinexis-proof" : "text-ink"}`}
+            >
+              {quickWins}
+            </span>
+          </span>
         </div>
-        <div className="panel !p-3">
-          <span className="text-muted text-[11px] font-medium">Avg priority</span>
-          <p
-            className={`font-mono-data mt-0.5 text-[15px] font-semibold ${avgScore >= 60 ? "text-kinexis-risk" : avgScore >= 40 ? "text-kinexis-signal" : "text-ink"}`}
-          >
-            {avgScore > 0 ? Math.round(avgScore) : "\u2014"}
-          </p>
-        </div>
-        <div className="panel !p-3">
-          <span className="text-muted text-[11px] font-medium">High severity</span>
-          <p
-            className={`font-mono-data mt-0.5 text-[15px] font-semibold ${highCount > 0 ? "text-kinexis-risk" : "text-kinexis-proof"}`}
-          >
-            {highCount > 0 ? highCount : "0"}
-          </p>
-        </div>
-        <div className="panel !p-3">
-          <span className="text-muted text-[11px] font-medium">Quick wins</span>
-          <p
-            className={`font-mono-data mt-0.5 text-[15px] font-semibold ${quickWins > 0 ? "text-kinexis-proof" : "text-ink"}`}
-          >
-            {quickWins > 0 ? quickWins : "0"}
-          </p>
-        </div>
-      </div>
+      </CollapsibleSection>
 
-      {/* Priority spotlight: Top 3 */}
-      {top3.length > 0 && (
-        <div className="mb-4">
-          <div className="mb-2 flex items-center gap-2">
-            <Target size={12} className="text-kinexis-focus" />
-            <span className="text-label text-kinexis-focus">Today&apos;s top 3</span>
-          </div>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-            {top3.map((insight, idx) => {
-              const book = PLAYBOOKS[insight.type];
-              const impact = impactLabel(insight.priority_score ?? 0);
-              const roi = formatRoiBadge(insight.type, book?.estimatedROI, effectivenessByType);
-              const conf = confidenceMeta(insight);
-              return (
-                <div
-                  key={insight.id}
-                  className={`panel motion-micro overflow-hidden hover:border-[color:var(--border-strong)] ${
-                    assignBlocked ? "opacity-70" : "cursor-pointer"
-                  }`}
-                  onClick={() =>
-                    onQuickAssign ? guardedQuickAssign(insight) : guardedCreateTask(insight)
-                  }
-                >
-                  <div className="p-3.5">
-                    <div className="mb-2 flex items-center gap-1.5">
-                      <span
-                        className="font-mono-data flex h-6 w-6 shrink-0 items-center justify-center bg-surface-lighter text-[11px] font-semibold text-kinexis-focus"
-                        style={{ borderRadius: "var(--radius-sm)" }}
-                      >
-                        {idx + 1}
-                      </span>
-                      <Badge tone={impact.tone}>{impact.label} impact</Badge>
-                      {conf && (
-                        <span title={conf.title}>
-                          <Badge tone={conf.tone}>{conf.label}</Badge>
-                        </span>
-                      )}
-                      {book && (
-                        <span className="text-muted ml-auto text-[11px]">{book.effort}</span>
-                      )}
-                    </div>
-                    <p className="text-[13px] font-medium leading-snug text-ink">
-                      {book?.title || insight.type.replace(/_/g, " ")}
-                    </p>
-                    <p className="text-muted mt-1 line-clamp-2 text-[11px] leading-relaxed">
-                      {insight.message}
-                    </p>
-                    {roi && (
-                      <div
-                        className={`mt-2 flex items-center gap-1.5 text-[11px] font-medium ${
-                          roi.measured ? "text-kinexis-proof" : "text-muted"
-                        }`}
-                      >
-                        <TrendingUp size={11} />
-                        {roi.label}
-                      </div>
-                    )}
-                    <div className="mt-2.5 flex gap-1.5">
-                      <Button size="sm" className="!h-7 !text-[11px]" disabled={assignBlocked}>
-                        <Zap size={10} /> Fix now
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="!h-7 !text-[11px]"
-                        disabled={assignBlocked}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          guardedCreateTask(insight);
-                        }}
-                      >
-                        Details
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Top story */}
+      {/* Single top fix — one CTA, no competing top-3 / top-story heroes */}
       {unresolved[0] && (
-        <Panel className="mb-4" padding="lg">
-          <p className="text-label text-kinexis-focus">Top story (impact-ranked)</p>
-          <p className="mt-1.5 text-[13px] font-medium leading-snug text-ink">
-            {unresolved[0].recommended_action || unresolved[0].message}
+        <Panel className="motion-micro mb-4" padding="lg">
+          <p className="text-label text-kinexis-focus">Top fix</p>
+          <p className="mt-1.5 text-[15px] font-semibold leading-snug text-ink">
+            {PLAYBOOKS[unresolved[0].type]?.title ||
+              unresolved[0].type.replace(/_/g, " ") ||
+              unresolved[0].recommended_action ||
+              unresolved[0].message}
           </p>
           <p className="text-muted mt-1.5 line-clamp-2 text-xs leading-relaxed">
-            {unresolved[0].message}
-            {unresolved[0].priority_score != null
-              ? ` \u00b7 score ${Math.round(unresolved[0].priority_score)}`
-              : ""}
+            {unresolved[0].recommended_action || unresolved[0].message}
           </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {onQuickAssign && unresolved[0] && (
-              <Button
-                variant="soft"
-                size="sm"
-                disabled={assignBlocked}
-                title={
-                  assignBlocked ? `Sync required — data is ${staleDays}d stale` : "Assign top fix"
-                }
-                onClick={() => {
-                  const top = unresolved[0];
-                  if (top) guardedQuickAssign(top);
-                }}
-              >
-                Assign top fix <Zap size={11} />
-              </Button>
-            )}
-            {unresolved[0] && (
-              <Button
-                variant="ghost"
-                size="sm"
-                disabled={assignBlocked}
-                title={
-                  assignBlocked
-                    ? `Sync required — data is ${staleDays}d stale`
-                    : "Open assign details"
-                }
-                onClick={() => {
-                  const top = unresolved[0];
-                  if (top) guardedCreateTask(top);
-                }}
-              >
-                Customize assign
-              </Button>
-            )}
+          <div className="mt-3">
+            <Button
+              variant="primary"
+              size="sm"
+              disabled={assignBlocked}
+              title={
+                assignBlocked ? `Sync required — data is ${staleDays}d stale` : "Assign this fix"
+              }
+              onClick={() => {
+                const top = unresolved[0];
+                if (!top) return;
+                if (onQuickAssign) guardedQuickAssign(top);
+                else guardedCreateTask(top);
+              }}
+            >
+              Assign <Zap size={11} />
+            </Button>
           </div>
         </Panel>
       )}
@@ -1028,7 +913,6 @@ export default function NextSteps({
             value={kindFilter}
             onChange={(k) => {
               setKindFilter(k);
-              setShowAll(false);
             }}
             options={[
               { id: "problem" as const, label: "Problems" },
@@ -1041,7 +925,6 @@ export default function NextSteps({
             value={severityFilter}
             onChange={(s) => {
               setSeverityFilter(s);
-              setShowAll(false);
             }}
             options={(["all", "high", "medium", "low"] as const).map((s) => ({
               id: s,
@@ -1056,6 +939,8 @@ export default function NextSteps({
         </div>
       </div>
 
+      {/* Quick filter chips + list */}
+      <div className="animate-state-settle">
       {/* Quick filter chips */}
       <div className="mb-3 flex flex-wrap items-center gap-2">
         {(
@@ -1092,7 +977,6 @@ export default function NextSteps({
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
-              setShowAll(false);
             }}
             placeholder="Search Fix queue\u2026"
             aria-label="Search Fix queue"
@@ -1167,7 +1051,7 @@ export default function NextSteps({
               className="motion-micro overflow-hidden hover:border-[color:var(--border-strong)]"
             >
               <div className="p-4">
-                <div className="flex items-start gap-3.5">
+                <div className="flex items-start gap-4">
                   <label className="mt-2 shrink-0">
                     <input
                       type="checkbox"
@@ -1184,7 +1068,7 @@ export default function NextSteps({
                     {String(idx + 1).padStart(2, "0")}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
+                    <div className="mb-1.5 flex flex-wrap items-center gap-2">
                       <Badge tone={severityTone(insight.severity)}>{insight.severity}</Badge>
                       <Badge tone={impact.tone}>{impact.label}</Badge>
                       {conf && (
@@ -1219,13 +1103,13 @@ export default function NextSteps({
                       {insight.message}
                     </p>
                     {insight.recommended_action && !concreteSteps(insight) && (
-                      <p className="mt-2.5 flex items-start gap-1.5 text-xs text-kinexis-focus">
+                      <p className="mt-2.5 flex items-start gap-2 text-xs text-kinexis-focus">
                         <Lightbulb size={12} strokeWidth={1.75} className="mt-0.5 shrink-0" />
                         <span className="whitespace-pre-wrap">{insight.recommended_action}</span>
                       </p>
                     )}
                   </div>
-                  <div className="flex shrink-0 flex-col gap-1.5">
+                  <div className="flex shrink-0 flex-col gap-2">
                     <Button
                       size="sm"
                       disabled={assignBlocked}
@@ -1235,23 +1119,10 @@ export default function NextSteps({
                       title={
                         assignBlocked
                           ? `Sync required — data is ${staleDays}d stale`
-                          : `Assign to ${assigneePresets[0] || "Unassigned"} and open IDE`
+                          : `Assign to ${assigneePresets[0] || "Unassigned"}`
                       }
                     >
-                      <Plus size={12} /> Assign to {assigneePresets[0] || "Unassigned"}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      disabled={assignBlocked}
-                      onClick={() => guardedCreateTask(insight)}
-                      title={
-                        assignBlocked
-                          ? `Sync required — data is ${staleDays}d stale`
-                          : "Assign with assignee and due date"
-                      }
-                    >
-                      Details\u2026
+                      <Plus size={12} /> Assign
                     </Button>
                     <Button
                       variant="ghost"
@@ -1271,27 +1142,16 @@ export default function NextSteps({
 
                 {steps.length > 0 && (
                   <div className="ml-0 mt-4 border-t border-[color:var(--border-subtle)] pt-3 sm:ml-12">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setExpandedChecklist(expandedChecklist === insight.id ? null : insight.id)
-                      }
-                      className="text-muted motion-micro mb-0 flex items-center gap-1.5 text-[12px] font-semibold hover:text-ink-secondary"
+                    <CollapsibleSection
+                      label={`Fix checklist (${steps.length})`}
+                      defaultOpen={idx < 3}
+                      className="!mt-0"
                     >
-                      <ClipboardList size={11} />
-                      Fix checklist ({steps.length})
-                      {expandedChecklist === insight.id ? (
-                        <ChevronUp size={12} />
-                      ) : (
-                        <ChevronDown size={12} />
-                      )}
-                    </button>
-                    {expandedChecklist === insight.id && (
-                      <ol className="mt-2.5 space-y-2">
+                      <ol className="space-y-2">
                         {steps.map((step, i) => (
                           <li
                             key={i}
-                            className="flex gap-2.5 text-xs leading-relaxed text-ink-secondary"
+                            className="flex gap-2 text-xs leading-relaxed text-ink-secondary"
                           >
                             <span className="font-mono-data w-4 shrink-0 pt-px text-ink-dim">
                               {i + 1}.
@@ -1300,7 +1160,7 @@ export default function NextSteps({
                           </li>
                         ))}
                       </ol>
-                    )}
+                    </CollapsibleSection>
                   </div>
                 )}
               </div>
@@ -1308,19 +1168,7 @@ export default function NextSteps({
           );
         })}
       </div>
-
-      {hiddenCount > 0 && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setShowAll((v) => !v)}
-          className="mt-3 !text-kinexis-focus hover:!text-kinexis-focus/80"
-        >
-          {showAll
-            ? "Show top 5 only"
-            : `Show ${hiddenCount} more ${kindFilter === "problem" ? "problem" : "opportunit"}${hiddenCount === 1 ? (kindFilter === "problem" ? "" : "y") : kindFilter === "problem" ? "s" : "ies"}`}
-        </Button>
-      )}
+      </div>
     </div>
   );
 }

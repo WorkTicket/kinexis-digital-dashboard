@@ -5,6 +5,7 @@ import { api, type Experiment } from "@/lib/api";
 import { Panel } from "@/components/ui/Panel";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { motion } from "@/lib/motion";
 
 type Rec = {
   id: number;
@@ -106,7 +107,7 @@ export default function ActiveTestsPanel({ clientId }: Props) {
   };
 
   return (
-    <Panel className="mb-4 p-4">
+    <Panel className={`mb-4 p-4 ${motion.settle}`}>
       <p className="section-label text-muted mb-1 text-[11px] font-semibold tracking-wide">
         Active tests
       </p>
@@ -117,13 +118,13 @@ export default function ActiveTestsPanel({ clientId }: Props) {
       <div className="mb-4 space-y-2 rounded-[var(--radius-md)] border border-[color:var(--border-subtle)] p-3">
         <p className="text-[12px] font-medium text-ink">Log experiment</p>
         <input
-          className="w-full rounded border border-[color:var(--border-subtle)] bg-transparent px-2 py-1.5 text-[13px] text-ink"
+          className="w-full rounded border border-[color:var(--border-subtle)] bg-transparent px-2 py-2 text-[13px] text-ink"
           placeholder="Hypothesis (e.g. New hero CTA lifts form CVR)"
           value={hypothesis}
           onChange={(e) => setHypothesis(e.target.value)}
         />
         <input
-          className="w-full rounded border border-[color:var(--border-subtle)] bg-transparent px-2 py-1.5 text-[13px] text-ink"
+          className="w-full rounded border border-[color:var(--border-subtle)] bg-transparent px-2 py-2 text-[13px] text-ink"
           placeholder="Success metric (optional, e.g. key_events)"
           value={metric}
           onChange={(e) => setMetric(e.target.value)}

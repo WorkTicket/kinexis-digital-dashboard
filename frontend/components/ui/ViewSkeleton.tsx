@@ -14,7 +14,7 @@ export function ViewSkeleton({ rows = 4, className = "", variant = "cards" }: Pr
     return (
       <div className={`animate-fade-in space-y-6 ${className}`.trim()} aria-busy="true">
         <Panel elevated padding="lg">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[180px_1fr]">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[180px_1fr]">
             <div className="flex flex-col items-center gap-3">
               <Skeleton className="h-[140px] w-[140px] rounded-full" />
               <Skeleton className="h-3 w-24" />
@@ -23,15 +23,15 @@ export function ViewSkeleton({ rows = 4, className = "", variant = "cards" }: Pr
               <Skeleton className="h-6 w-3/4 max-w-md" />
               <Skeleton className="h-4 w-full max-w-xl" />
               <div className="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-2">
-                <Skeleton className="h-20 rounded-xl" />
-                <Skeleton className="h-20 rounded-xl" />
+                <Skeleton className="h-20 rounded-md" />
+                <Skeleton className="h-20 rounded-md" />
               </div>
             </div>
           </div>
         </Panel>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-24 rounded-xl" />
+            <Skeleton key={i} className="h-24 rounded-md" />
           ))}
         </div>
       </div>
@@ -59,9 +59,9 @@ export function ViewSkeleton({ rows = 4, className = "", variant = "cards" }: Pr
         <Panel className="space-y-4">
           <Skeleton className="h-5 w-40" />
           <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-            <Skeleton className="h-24 rounded-xl" />
-            <Skeleton className="h-24 rounded-xl" />
-            <Skeleton className="h-24 rounded-xl" />
+            <Skeleton className="h-24 rounded-md" />
+            <Skeleton className="h-24 rounded-md" />
+            <Skeleton className="h-24 rounded-md" />
           </div>
         </Panel>
         <Panel className="space-y-3">
@@ -115,7 +115,7 @@ export function ViewSkeleton({ rows = 4, className = "", variant = "cards" }: Pr
         </div>
         <div className="divide-y divide-[color:var(--border-subtle)]">
           {Array.from({ length: rows }).map((_, i) => (
-            <div key={i} className="flex items-center gap-4 px-4 py-3.5">
+            <div key={i} className="flex items-center gap-4 px-4 py-4">
               <Skeleton className="h-4 w-40" />
               <Skeleton className="ml-auto h-4 w-16" />
               <Skeleton className="h-4 w-12" />

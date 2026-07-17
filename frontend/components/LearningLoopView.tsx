@@ -74,7 +74,7 @@ export default function LearningLoopView({ clientId }: Props) {
     <div className="space-y-4">
       {fixes.length > 0 && (
         <Panel padding="md">
-          <p className="section-label mb-3 flex items-center gap-1.5">
+          <p className="section-label mb-3 flex items-center gap-2">
             <Trophy size={12} /> What worked across clients
           </p>
           <ul className="space-y-2">
@@ -88,7 +88,7 @@ export default function LearningLoopView({ clientId }: Props) {
                   <Badge tone={f.win_rate != null && f.win_rate >= 0.5 ? "proof" : "default"}>
                     {f.win_rate != null ? `${Math.round(f.win_rate * 100)}% win` : "n/a"}
                   </Badge>
-                  <span className="text-muted font-mono-data">n={f.total}</span>
+                  <span className="text-muted font-mono-data">{f.total} fixes</span>
                   {f.median_lift_pct != null && (
                     <span className="text-muted font-mono-data">
                       median {f.median_lift_pct > 0 ? "+" : ""}
@@ -104,7 +104,7 @@ export default function LearningLoopView({ clientId }: Props) {
 
       <Panel padding={false}>
         <div className="border-b border-[color:var(--border-subtle)] px-4 py-3">
-          <p className="section-label flex items-center gap-1.5">
+          <p className="section-label flex items-center gap-2">
             <Brain size={12} /> Recommendation lifecycle
             {clientId ? " (this client)" : " (all clients)"}
           </p>
@@ -112,7 +112,7 @@ export default function LearningLoopView({ clientId }: Props) {
         <ul className="divide-y divide-[color:var(--border-subtle)]">
           {recs.map((r) => (
             <li key={r.id} className="px-4 py-3">
-              <div className="mb-1 flex flex-wrap items-center gap-1.5">
+              <div className="mb-1 flex flex-wrap items-center gap-2">
                 <Badge tone="brand">{r.status}</Badge>
                 {r.outcome && <Badge tone={outcomeTone(r.outcome)}>{r.outcome}</Badge>}
                 {r.fix_type && (

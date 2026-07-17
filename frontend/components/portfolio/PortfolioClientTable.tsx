@@ -143,7 +143,7 @@ function primaryCta(row: PortfolioClient) {
     return { label: "Open Fix queue", tab: "prescribe" as const };
   }
   if (row.risk === "critical" || row.risk === "watch") {
-    return { label: "Review Situation", tab: "detect" as const };
+    return { label: "Open Detect", tab: "detect" as const };
   }
   return { label: "Open", tab: (row.top_action?.cta_tab || "detect") as string };
 }
@@ -215,7 +215,7 @@ export function PortfolioClientTable({
           <select
             value={ownerFilter}
             onChange={(e) => setOwnerFilter(e.target.value)}
-            className="border border-[color:var(--border-subtle)] bg-surface px-2 py-1.5 text-xs text-ink"
+            className="border border-[color:var(--border-subtle)] bg-surface px-2 py-2 text-xs text-ink"
             style={{ borderRadius: "var(--radius-sm)" }}
           >
             <option value="all">All owners</option>
@@ -229,7 +229,7 @@ export function PortfolioClientTable({
           <select
             value={myBookName}
             onChange={(e) => setMyBook(e.target.value)}
-            className="border border-[color:var(--border-subtle)] bg-surface px-2 py-1.5 text-xs text-ink"
+            className="border border-[color:var(--border-subtle)] bg-surface px-2 py-2 text-xs text-ink"
             style={{ borderRadius: "var(--radius-sm)" }}
             title="My book \u2014 filter to your owner name"
           >
@@ -254,19 +254,19 @@ export function PortfolioClientTable({
           >
             Report ready
           </button>
-          <div className="ml-auto flex items-center gap-1.5">
+          <div className="ml-auto flex items-center gap-2">
             <input
               type="search"
               value={tableSearch}
               onChange={(e) => setTableSearch(e.target.value)}
               placeholder="Search clients\u2026"
-              className="input-field !w-40 !py-1.5 !text-xs"
+              className="input-field !w-40 !py-2 !text-xs"
             />
             {hasActiveFilters && (
               <button
                 type="button"
                 onClick={clearFilters}
-                className="text-muted text-xs hover:text-ink-secondary"
+                className="text-muted motion-micro text-xs hover:text-ink-secondary"
               >
                 Clear
               </button>
@@ -304,7 +304,7 @@ export function PortfolioClientTable({
                     openRow(row);
                   }
                 }}
-                className="panel motion-micro cursor-pointer px-4 py-3.5 hover:border-[color:var(--border-strong)]"
+                className="panel motion-micro cursor-pointer px-4 py-4 hover:border-[color:var(--border-strong)]"
               >
                 <div className="min-w-0">
                   <div className="mb-1 flex flex-wrap items-center gap-2">
@@ -336,7 +336,7 @@ export function PortfolioClientTable({
                   ) : (
                     <p className="text-xs text-ink-dim">Ready for review</p>
                   )}
-                  <div className="mt-2 flex flex-wrap gap-1.5">
+                  <div className="mt-2 flex flex-wrap gap-2">
                     {onStartTopAction && row.top_action && (
                       <Button
                         size="sm"
@@ -388,7 +388,7 @@ export function PortfolioClientTable({
                       <th
                         key={label}
                         title={title}
-                        className="text-muted whitespace-nowrap px-3.5 py-3 text-[12px] font-semibold"
+                        className="text-muted whitespace-nowrap px-4 py-3 text-[12px] font-semibold"
                       >
                         {label === "Sel" ? (
                           <input
@@ -415,7 +415,7 @@ export function PortfolioClientTable({
                       onClick={() => (bulkMode ? toggleBulkSelect(row.client_id) : openRow(row))}
                     >
                       {bulkMode && (
-                        <td className="px-3.5 py-3" onClick={(e) => e.stopPropagation()}>
+                        <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                           <input
                             type="checkbox"
                             checked={bulkSelected.has(row.client_id)}
@@ -424,9 +424,9 @@ export function PortfolioClientTable({
                           />
                         </td>
                       )}
-                      <td className="px-3.5 py-3">
+                      <td className="px-4 py-3">
                         <div className="min-w-0 max-w-[220px]">
-                          <p className="flex items-center gap-1.5 truncate font-medium text-ink">
+                          <p className="flex items-center gap-2 truncate font-medium text-ink">
                             {row.name}
                             {(row.priority || 1) >= 2 && (
                               <span className="text-label mb-0 text-kinexis-focus">
@@ -452,7 +452,7 @@ export function PortfolioClientTable({
                           </p>
                         </div>
                       </td>
-                      <td className="px-3.5 py-3">
+                      <td className="px-4 py-3">
                         {row.success_contract?.configured ? (
                           <div className="min-w-0">
                             <Badge tone={contractStatusTone(row.success_contract.status)}>
@@ -471,7 +471,7 @@ export function PortfolioClientTable({
                           <span className="text-xs text-ink-dim">Unset</span>
                         )}
                       </td>
-                      <td className="px-3.5 py-3" onClick={(e) => e.stopPropagation()}>
+                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                         <div className="group/risk relative inline-block">
                           <button
                             type="button"
@@ -495,7 +495,7 @@ export function PortfolioClientTable({
                             <div
                               id={`risk-tooltip-${row.client_id}`}
                               role="tooltip"
-                              className="pointer-events-none absolute left-0 top-full z-20 mt-1.5 hidden w-56 border border-[color:var(--border-default)] bg-surface-elevated p-2.5 text-[11px] text-ink-secondary shadow-dropdown group-focus-within/risk:block group-hover/risk:block"
+                              className="pointer-events-none absolute left-0 top-full z-20 mt-1.5 hidden w-56 border border-[color:var(--border-default)] bg-surface-elevated p-3 text-[11px] text-ink-secondary shadow-dropdown group-focus-within/risk:block group-hover/risk:block"
                               style={{ borderRadius: "var(--radius-md)" }}
                             >
                               <p className="mb-1 font-medium text-ink">Why</p>
@@ -508,7 +508,7 @@ export function PortfolioClientTable({
                           )}
                         </div>
                       </td>
-                      <td className="px-3.5 py-3">
+                      <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <HealthMiniBar score={row.health_score} />
                           <span className="text-metric text-base leading-none">
@@ -516,7 +516,7 @@ export function PortfolioClientTable({
                           </span>
                         </div>
                       </td>
-                      <td className="max-w-[200px] px-3.5 py-3">
+                      <td className="max-w-[200px] px-4 py-3">
                         {row.top_action ? (
                           <div className="min-w-0">
                             <p className="truncate text-xs text-ink">{row.top_action.title}</p>
@@ -532,8 +532,8 @@ export function PortfolioClientTable({
                           <span className="text-xs text-ink-dim">\u2014</span>
                         )}
                       </td>
-                      <td className="whitespace-nowrap px-3.5 py-3">
-                        <div className="flex items-center gap-1.5">
+                      <td className="whitespace-nowrap px-4 py-3">
+                        <div className="flex items-center gap-2">
                           <span
                             className={`h-1.5 w-1.5 rounded-full ${
                               !row.last_synced_at
@@ -550,12 +550,13 @@ export function PortfolioClientTable({
                           </span>
                         </div>
                         <div className="text-muted mt-0.5 text-[11px]">
-                          {row.open_insights} i {row.open_tasks} t
+                          {row.open_insights} issue{row.open_insights === 1 ? "" : "s"} ·{" "}
+                          {row.open_tasks} task{row.open_tasks === 1 ? "" : "s"}
                         </div>
                       </td>
-                      <td className="px-3.5 py-3" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex flex-wrap items-center gap-1.5">
-                          {onStartTopAction && row.top_action && (
+                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex flex-wrap items-center gap-2">
+                          {onStartTopAction && row.top_action ? (
                             <Button
                               size="sm"
                               variant="primary"
@@ -564,21 +565,22 @@ export function PortfolioClientTable({
                             >
                               {startingClientId === row.client_id ? "Starting…" : "Start"}
                             </Button>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="soft"
+                              onClick={() => {
+                                const cta = primaryCta(row);
+                                onOpenClient(row.client_id, { tab: cta.tab });
+                              }}
+                            >
+                              {primaryCta(row).label}
+                            </Button>
                           )}
-                          <Button
-                            size="sm"
-                            variant="soft"
-                            onClick={() => {
-                              const cta = primaryCta(row);
-                              onOpenClient(row.client_id, { tab: cta.tab });
-                            }}
-                          >
-                            {primaryCta(row).label}
-                          </Button>
                         </div>
                       </td>
-                      <td className="px-3.5 py-3">
-                        <div className="flex items-center gap-1.5">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
                           <WowCell value={row.wow?.clicks} />
                           {(row.wow?.sessions ?? null) !== null && (
                             <WowCell value={row.wow?.sessions} />

@@ -1,18 +1,14 @@
 "use client";
 
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Insight, api } from "@/lib/api";
 import { buildHealthFromApi, HealthArea, type ApiHealthInput } from "@/lib/metrics";
 import { chartHealthRingTone, chartRingTrack } from "@/lib/chartTheme";
 import { useToast } from "@/components/Toast";
-import {
-  AlertTriangle,
-  ArrowRight,
-  ShieldCheck,
-  ChevronDown,
-  Lightbulb,
-  TrendingUp,
-} from "lucide-react";
+import { Stat } from "@/components/ui/Stat";
+import { Panel } from "@/components/ui/Panel";
+import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
+import { AlertTriangle, ArrowRight, ShieldCheck, Lightbulb, TrendingUp } from "lucide-react";
 
 type Props = {
   clientId?: number;
@@ -21,7 +17,6 @@ type Props = {
   overdueTasks?: number;
   staleDays?: number | null;
   daysSinceRelaunch?: number | null;
-  onStartFix?: () => void;
   onOpenFunnel?: () => void;
 };
 
@@ -35,6 +30,19 @@ function statusColor(status: HealthArea["status"]) {
       return { bar: "bg-kinexis-risk", text: "text-kinexis-risk", label: "Critical" };
     default:
       return { bar: "bg-kinexis-mist", text: "text-muted", label: "—" };
+  }
+}
+
+function statusStatTone(status: HealthArea["status"]) {
+  switch (status) {
+    case "strong":
+      return "success" as const;
+    case "watch":
+      return "warning" as const;
+    case "critical":
+      return "danger" as const;
+    default:
+      return "default" as const;
   }
 }
 
@@ -53,14 +61,8 @@ const gradeClass = {
   default: "text-muted border-[color:var(--border-default)]",
 };
 
-function initialExpanded(areas: HealthArea[]) {
-  const initial = new Set<string>();
-  for (const area of areas) {
-    if (area.status === "critical" || area.status === "watch" || area.score < 75) {
-      initial.add(area.id);
-    }
-  }
-  return initial;
+function tipsDefaultOpen(area: HealthArea) {
+  return area.status === "critical" || area.status === "watch" || area.score < 75;
 }
 
 export default function ClientHealth({
@@ -70,13 +72,11 @@ export default function ClientHealth({
   overdueTasks = 0,
   staleDays = null,
   daysSinceRelaunch = null,
-  onStartFix,
   onOpenFunnel,
 }: Props) {
   const { error: toastError } = useToast();
   const [apiHealth, setApiHealth] = useState<ApiHealthInput | null>(null);
   const [loaded, setLoaded] = useState(false);
-  const userToggled = useRef(false);
 
   useEffect(() => {
     if (!clientId) {
@@ -103,7 +103,7 @@ export default function ClientHealth({
         if (cancelled) return;
         setApiHealth(null);
         setLoaded(true);
-        toastError(e instanceof Error ? e.message : "Couldn't load authoritative health score");
+        toastError(e instanceof Error ? e.message : "Couldn't load health score");
       });
     return () => {
       cancelled = true;
@@ -119,26 +119,6 @@ export default function ClientHealth({
     [apiHealth, insights, daysSinceRelaunch]
   );
 
-  const areasKey = healthDisplay.areas.map((a) => `${a.id}:${a.status}:${a.score}`).join("|");
-  const [expandedFixes, setExpandedFixes] = useState<Set<string>>(() =>
-    initialExpanded(healthDisplay.areas)
-  );
-
-  useEffect(() => {
-    if (userToggled.current) return;
-    setExpandedFixes(initialExpanded(healthDisplay.areas));
-  }, [areasKey, healthDisplay.areas]);
-
-  function toggleFixes(id: string) {
-    userToggled.current = true;
-    setExpandedFixes((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }
-
   const ringColor = chartHealthRingTone(healthDisplay.score);
   const circumference = 2 * Math.PI * 54;
   const offset = circumference - (healthDisplay.score / 100) * circumference;
@@ -147,8 +127,8 @@ export default function ClientHealth({
   const hasAuthoritative = loaded && apiHealth != null && (apiHealth.health_score ?? 0) > 0;
 
   return (
-    <section className="panel animate-fade-up mb-7 overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[color:var(--border-subtle)] px-5 pb-3.5 pt-4">
+    <Panel className="animate-fade-up overflow-hidden" padding={false}>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[color:var(--border-subtle)] px-4 pb-4 pt-4">
         <div>
           <p className="text-label">Client health</p>
           <p className="text-muted mt-0.5 text-[13px]">
@@ -160,14 +140,14 @@ export default function ClientHealth({
                 : staleDays != null && staleDays >= 3
                   ? ` · data ${staleDays}d stale`
                   : hasAuthoritative
-                    ? " · 7d authoritative score"
+                    ? " · 7-day health score"
                     : " · awaiting sync"}
           </p>
         </div>
         <span className={`badge ${gradeClass[grade]}`}>{healthDisplay.grade}</span>
       </div>
 
-      <div className="grid grid-cols-1 gap-7 p-5 sm:p-6 lg:grid-cols-[168px_1fr]">
+      <div className="grid grid-cols-1 gap-6 p-4 sm:p-6 lg:grid-cols-[168px_1fr]">
         <div className="flex flex-col items-center justify-center">
           <div className="relative h-[132px] w-[132px]">
             <svg className="h-full w-full -rotate-90" viewBox="0 0 120 120">
@@ -186,7 +166,7 @@ export default function ClientHealth({
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-metric text-[2rem] leading-none" style={{ color: ringColor }}>
+              <span className="text-display leading-none" style={{ color: ringColor }}>
                 {healthDisplay.score > 0 ? healthDisplay.score : "—"}
               </span>
               <span className="text-muted font-mono-data mt-1.5 text-[11px] font-medium">
@@ -194,7 +174,7 @@ export default function ClientHealth({
               </span>
             </div>
           </div>
-          <div className="text-muted mt-3.5 flex flex-col items-center gap-1 text-[11px]">
+          <div className="text-muted mt-3 flex flex-col items-center gap-1 text-[11px]">
             <div className="flex items-center gap-3">
               {(healthDisplay.openIssues.high > 0 ||
                 healthDisplay.openIssues.medium > 0 ||
@@ -251,22 +231,13 @@ export default function ClientHealth({
           </p>
 
           {topPlay && healthDisplay.score > 0 && healthDisplay.score < 85 && (
-            <div className="mt-3 rounded-[var(--radius-sm)] border border-kinexis-signal/25 bg-kinexis-signal/5 px-3 py-2.5">
+            <div className="mt-3 rounded-[var(--radius-sm)] border border-kinexis-signal/25 bg-kinexis-signal/5 px-3 py-3">
               <p className="text-[11px] font-medium text-kinexis-signal">
-                Next move to raise score
+                Score tip
               </p>
               <p className="mt-0.5 text-[13px] font-medium text-ink">{topPlay.title}</p>
               {topPlay.detail && (
                 <p className="text-muted mt-0.5 text-[12px] leading-snug">{topPlay.detail}</p>
-              )}
-              {onStartFix && (
-                <button
-                  type="button"
-                  className="btn-secondary mt-2 !h-7 !text-[11px]"
-                  onClick={onStartFix}
-                >
-                  Open Fix queue
-                </button>
               )}
             </div>
           )}
@@ -276,49 +247,42 @@ export default function ClientHealth({
               {healthDisplay.areas.map((area) => {
                 const tone = statusColor(area.status);
                 return (
-                  <div key={area.id} className="metric-tile">
-                    <div className="mb-2 flex items-center justify-between">
-                      <span className="text-[13px] font-medium text-ink-secondary">
-                        {area.label}
-                      </span>
-                      <span className={`text-[11px] font-medium ${tone.text}`}>{tone.label}</span>
-                    </div>
-                    <div className="progress-track mb-2">
+                  <div key={area.id} className="space-y-2">
+                    <Stat
+                      label={area.label}
+                      value={area.score}
+                      hint={`${tone.label} · ${area.summary}`}
+                      tone={statusStatTone(area.status)}
+                      className="w-full"
+                    />
+                    <div className="progress-track">
                       <div
                         className={`progress-fill ${tone.bar} motion-bar`}
                         style={{ width: `${area.score}%` }}
                       />
                     </div>
-                    <p className="text-muted text-[12px] leading-snug">{area.summary}</p>
                     {area.fixes.length > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => toggleFixes(area.id)}
-                        className="mt-2 flex items-center gap-1 text-[11px] font-medium text-kinexis-signal transition-colors hover:text-kinexis-risk"
+                      <CollapsibleSection
+                        label={`${area.fixes.length} tip${area.fixes.length === 1 ? "" : "s"}`}
+                        defaultOpen={tipsDefaultOpen(area)}
+                        className="[&>div:first-child]:!mb-1 [&>div:first-child]:!mt-0"
                       >
-                        <Lightbulb size={11} strokeWidth={1.75} />
-                        {expandedFixes.has(area.id)
-                          ? "Hide tips"
-                          : `${area.fixes.length} tip${area.fixes.length === 1 ? "" : "s"}`}
-                        <ChevronDown
-                          size={11}
-                          strokeWidth={1.75}
-                          className={`transition-transform ${expandedFixes.has(area.id) ? "rotate-180" : ""}`}
-                        />
-                      </button>
-                    )}
-                    {expandedFixes.has(area.id) && area.fixes.length > 0 && (
-                      <ul className="mt-2 space-y-1 border-t border-[color:var(--border-subtle)] pt-2">
-                        {area.fixes.map((fix, fi) => (
-                          <li
-                            key={fi}
-                            className="flex items-start gap-1.5 text-[11px] leading-relaxed text-ink-dim"
-                          >
-                            <span className="mt-0.5 shrink-0 text-kinexis-signal">&#9656;</span>
-                            {fix}
-                          </li>
-                        ))}
-                      </ul>
+                        <ul className="space-y-1 border-t border-[color:var(--border-subtle)] pt-2">
+                          {area.fixes.map((fix, fi) => (
+                            <li
+                              key={fi}
+                              className="flex items-start gap-2 text-[11px] leading-relaxed text-ink-dim"
+                            >
+                              <Lightbulb
+                                size={11}
+                                strokeWidth={1.75}
+                                className="mt-0.5 shrink-0 text-kinexis-signal"
+                              />
+                              {fix}
+                            </li>
+                          ))}
+                        </ul>
+                      </CollapsibleSection>
                     )}
                   </div>
                 );
@@ -326,27 +290,22 @@ export default function ClientHealth({
             </div>
           )}
 
-          <div className="mt-5 flex flex-wrap gap-2">
-            {onStartFix && healthDisplay.score > 0 && healthDisplay.grade !== "Excellent" && (
-              <button type="button" onClick={onStartFix} className="btn-primary">
-                Open Fix queue
-                <ArrowRight size={13} />
-              </button>
-            )}
+          <div className="mt-5 flex flex-wrap items-center gap-2">
             {onOpenFunnel && (
               <button type="button" onClick={onOpenFunnel} className="btn-secondary">
                 Inspect funnel
+                <ArrowRight size={13} />
               </button>
             )}
             {healthDisplay.openIssues.high > 0 && (
-              <span className="inline-flex items-center gap-1.5 px-2 py-2 text-xs text-kinexis-risk">
+              <span className="inline-flex items-center gap-2 px-2 py-2 text-xs text-kinexis-risk">
                 <AlertTriangle size={12} strokeWidth={1.75} />
-                Assign high-severity first in Fix queue
+                High-severity first — assign in Fix queue
               </span>
             )}
           </div>
         </div>
       </div>
-    </section>
+    </Panel>
   );
 }

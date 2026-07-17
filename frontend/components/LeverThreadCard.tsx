@@ -59,7 +59,7 @@ export default function LeverThreadCard({ lever, busy, onAction }: Props) {
       padding={false}
     >
       <div className="px-4 pb-3 pt-4">
-        <div className="flex items-start gap-3.5">
+        <div className="flex items-start gap-4">
           <GrowthLeverGauge
             score={lever.impact_score}
             confidence={lever.confidence_label}
@@ -125,7 +125,7 @@ export default function LeverThreadCard({ lever, busy, onAction }: Props) {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 border-t border-[color:var(--border-subtle)] bg-surface px-4 py-2.5">
+      <div className="flex flex-wrap gap-2 border-t border-[color:var(--border-subtle)] bg-surface px-4 py-3">
         {cta && (
           <Button
             variant="soft"

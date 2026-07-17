@@ -14,7 +14,7 @@ const variantClass: Record<Variant, string> = {
 };
 
 const sizeClass: Record<Size, string> = {
-  sm: "!px-2.5 !py-1.5 !text-xs",
+  sm: "!px-3 !py-2 !text-xs",
   md: "",
 };
 

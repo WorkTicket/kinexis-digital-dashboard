@@ -7,6 +7,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { Button } from "@/components/ui/Button";
 import { Stat } from "@/components/ui/Stat";
+import { Panel } from "@/components/ui/Panel";
 import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { BookCapacity } from "@/components/portfolio/BookCapacity";
@@ -39,14 +40,13 @@ export default function PortfolioView({
   onCompare,
 }: Props) {
   const data = usePortfolioData();
-  const { success: toastSuccess, error: toastError, info: toastInfo } = useToast();
+  const { success: toastSuccess, error: toastError } = useToast();
   const [startingId, setStartingId] = useState<number | null>(null);
   const {
     rows,
     wins,
     todayItems,
     aiValue,
-    successBoard,
     loading,
     loadError,
     sortKey,
@@ -97,9 +97,10 @@ export default function PortfolioView({
     try {
       const res = await api.actions.startTopAction(clientId);
       toastSuccess(`Started: ${res.title} — baseline captured`);
+      // Desktop-only handoff — never toast IDE chrome at web users
       if (res.open_cursor && window.kinexis?.openCursorForTask) {
         try {
-          const result = await window.kinexis.openCursorForTask(res.task_id, {
+          await window.kinexis.openCursorForTask(res.task_id, {
             title: res.title,
             message: res.detail || undefined,
             notes: res.result_notes || undefined,
@@ -107,12 +108,9 @@ export default function PortfolioView({
             targetUrl: res.target_url || undefined,
             playbookPattern: res.playbook_pattern || undefined,
           });
-          if (!result.ok) toastInfo(result.error || "Cursor handoff skipped");
         } catch {
-          toastInfo("Cursor handoff requires the Electron desktop app");
+          /* silent — web and failed handoffs stay in-app */
         }
-      } else if (res.open_cursor) {
-        toastInfo("Cursor handoff requires the Electron desktop app");
       }
       openClient(clientId, {
         tab: "execute",
@@ -143,7 +141,7 @@ export default function PortfolioView({
 
   if (loadError) {
     return (
-      <div className="animate-fade-up mx-auto max-w-lg p-6 sm:p-8">
+      <div className="animate-fade-up mx-auto max-w-lg p-6 sm:p-6">
         <ErrorState
           title="Portfolio unavailable"
           description={loadError}
@@ -189,60 +187,40 @@ export default function PortfolioView({
 
   return (
     <div className="workspace-content animate-fade-up">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <Panel padding="sm" className="mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
           <Stat
             label="Critical"
             value={critical}
             tone={critical > 0 ? "danger" : "default"}
-            className="!min-w-0 !p-2.5 [&_.text-metric]:!mt-1 [&_.text-metric]:!text-[1.15rem]"
+            className="!min-w-0 !p-3 [&_.text-metric]:!mt-1 [&_.text-metric]:!text-[1.15rem]"
           />
           <Stat
-            label="Watch"
-            value={watch}
-            tone={watch > 0 ? "warning" : "default"}
-            className="!min-w-0 !p-2.5 [&_.text-metric]:!mt-1 [&_.text-metric]:!text-[1.15rem]"
+            label="At risk"
+            value={atRisk}
+            tone={atRisk > 0 ? "warning" : "default"}
+            className="!min-w-0 !p-3 [&_.text-metric]:!mt-1 [&_.text-metric]:!text-[1.15rem]"
           />
-          <Stat
-            label="Healthy"
-            value={healthy}
-            tone="success"
-            className="!min-w-0 !p-2.5 [&_.text-metric]:!mt-1 [&_.text-metric]:!text-[1.15rem]"
-          />
-          {(noData ?? 0) > 0 && (
-            <Stat
-              label="No data"
-              value={noData}
-              tone="warning"
-              className="!min-w-0 !p-2.5 [&_.text-metric]:!mt-1 [&_.text-metric]:!text-[1.15rem]"
-            />
-          )}
           {overdue > 0 && (
             <Stat
               label="Overdue"
               value={overdue}
               tone="danger"
-              className="!min-w-0 !p-2.5 [&_.text-metric]:!mt-1 [&_.text-metric]:!text-[1.15rem]"
+              className="!min-w-0 !p-3 [&_.text-metric]:!mt-1 [&_.text-metric]:!text-[1.15rem]"
             />
           )}
-          <Stat
-            label="Shipped 7d"
-            value={successBoard?.shipped_7d ?? 0}
-            tone={
-              (successBoard?.shipped_7d ?? 0) >= (successBoard?.ship_target_min ?? 3)
-                ? "success"
-                : "warning"
-            }
-            className="!min-w-0 !p-2.5 [&_.text-metric]:!mt-1 [&_.text-metric]:!text-[1.15rem]"
-          />
-          {(successBoard?.clients_behind_pace ?? 0) > 0 && (
-            <span className="text-[12px] text-kinexis-signal">
-              {successBoard?.clients_behind_pace} behind 3–5/wk pace
-            </span>
+          {(revenue30 > 0 || leads30 > 0) && (
+            <Stat
+              label={revenue30 > 0 ? "Revenue 30d" : "Leads 30d"}
+              value={revenue30 > 0 ? `$${Math.round(revenue30 / 1000)}k` : leads30}
+              tone="success"
+              className="!min-w-0 !p-3 [&_.text-metric]:!mt-1 [&_.text-metric]:!text-[1.15rem]"
+            />
           )}
           {syncNote && <span className="text-muted text-[12px]">{syncNote}</span>}
         </div>
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-2">
           <Button variant="ghost" size="sm" onClick={exportCSV} title="Export CSV">
             <Download size={13} strokeWidth={1.75} />
             Export
@@ -282,6 +260,7 @@ export default function PortfolioView({
           </Button>
         </div>
       </div>
+      </Panel>
 
       {/* Dominant composition: today's book */}
       <TodayQueue
@@ -337,7 +316,7 @@ export default function PortfolioView({
         </div>
       )}
 
-      <CollapsibleSection label="Capacity & owners" defaultOpen={false}>
+      <CollapsibleSection label="Capacity & owners" defaultOpen>
         <BookCapacity
           openWork={capacity.openWork}
           overdueWork={capacity.overdueWork}
@@ -345,7 +324,7 @@ export default function PortfolioView({
         />
       </CollapsibleSection>
 
-      <CollapsibleSection label={`Client directory · ${sorted.length}`} defaultOpen={false}>
+      <CollapsibleSection label={`Client directory · ${sorted.length}`} defaultOpen>
         <PortfolioClientTable
           rows={rows}
           sorted={sorted}
@@ -375,7 +354,7 @@ export default function PortfolioView({
         />
       </CollapsibleSection>
 
-      <CollapsibleSection label={`Wins & AI value · ${wins.length}`} defaultOpen={false}>
+      <CollapsibleSection label={`Wins & AI value · ${wins.length}`}>
         <PortfolioWinsPanel
           wins={wins}
           aiValue={aiValue}

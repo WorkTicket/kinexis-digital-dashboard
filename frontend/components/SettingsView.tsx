@@ -149,7 +149,7 @@ export default function SettingsView() {
       return true;
     }
     if (!/^#[0-9A-Fa-f]{3,6}$/.test(hex)) {
-      setAccentError("Must be a hex color like #0891B2");
+      setAccentError("Must be a hex color like #RRGGBB");
       return false;
     }
     setAccentError(undefined);
@@ -278,7 +278,7 @@ export default function SettingsView() {
   const accentColor =
     settings?.agency_accent?.startsWith("#") && settings.agency_accent.length >= 4
       ? settings.agency_accent
-      : "#0891B2";
+      : "var(--kinexis-proof)";
 
   return (
     <div className="animate-fade-up mx-auto max-w-2xl pb-8">
@@ -341,7 +341,7 @@ export default function SettingsView() {
                     key={provider}
                     type="button"
                     onClick={() => setSettings({ ...settings, ai_provider: provider })}
-                    className={`rounded-xl border p-4 text-left transition-all duration-micro ${
+                    className={`rounded-md border p-4 text-left transition-all duration-micro ${
                       active
                         ? "bg-[color:var(--kinexis-focus)]/[.06] border-kinexis-focus/30 ring-1 ring-inset ring-kinexis-focus/15"
                         : "border-[color:var(--border-subtle)] hover:border-[color:var(--border-default)]"
@@ -368,7 +368,7 @@ export default function SettingsView() {
             </div>
 
             {settings.ai_provider === "anthropic" && (
-              <div className="flex items-center gap-2 rounded-lg bg-surface-lighter/60 px-3.5 py-2.5">
+              <div className="flex items-center gap-2 rounded-lg bg-surface-lighter/60 px-4 py-3">
                 {settings.anthropic_configured ? (
                   <ShieldCheck size={14} className="shrink-0 text-kinexis-proof" />
                 ) : (
@@ -392,7 +392,7 @@ export default function SettingsView() {
             )}
 
             {settings.ai_provider === "ollama" && (
-              <div className="space-y-3 rounded-xl border border-[color:var(--border-subtle)] bg-surface-lighter/40 p-4">
+              <div className="space-y-3 rounded-md border border-[color:var(--border-subtle)] bg-surface-lighter/40 p-4">
                 <Input
                   label="Ollama base URL"
                   value={settings.ollama_base_url}
@@ -440,19 +440,19 @@ export default function SettingsView() {
                 </div>
               </div>
               <div className="mb-4 grid grid-cols-2 gap-3">
-                <div className="rounded-lg bg-surface-lighter/60 p-3.5">
+                <div className="rounded-lg bg-surface-lighter/60 p-4">
                   <p className="text-muted text-[11px] font-medium uppercase tracking-wider">
                     Calls
                   </p>
-                  <p className="mt-1 text-2xl font-semibold tracking-tight text-ink">
+                  <p className="mt-1 text-display font-semibold tracking-tight text-ink">
                     {usage.week_total_calls}
                   </p>
                 </div>
-                <div className="rounded-lg bg-surface-lighter/60 p-3.5">
+                <div className="rounded-lg bg-surface-lighter/60 p-4">
                   <p className="text-muted text-[11px] font-medium uppercase tracking-wider">
                     Est. cost
                   </p>
-                  <p className="mt-1 text-2xl font-semibold tracking-tight text-kinexis-focus">
+                  <p className="mt-1 text-display font-semibold tracking-tight text-kinexis-focus">
                     ${usage.week_estimated_cost_usd.toFixed(2)}
                   </p>
                 </div>
@@ -462,7 +462,7 @@ export default function SettingsView() {
                   {usage.by_client.slice(0, 8).map((row) => (
                     <li
                       key={`${row.client_id ?? "x"}-${row.client_name}`}
-                      className="flex items-center justify-between gap-3 px-4 py-2.5 text-[13px]"
+                      className="flex items-center justify-between gap-3 px-4 py-3 text-[13px]"
                     >
                       <span className="truncate text-ink-secondary">{row.client_name}</span>
                       <span className="text-muted shrink-0 font-mono text-[11px]">
@@ -524,7 +524,7 @@ export default function SettingsView() {
                 return (
                   <div
                     key={key}
-                    className="flex items-center gap-4 rounded-xl border border-[color:var(--border-subtle)] p-4 transition-colors hover:border-[color:var(--border-default)]"
+                    className="flex items-center gap-4 rounded-md border border-[color:var(--border-subtle)] p-4 transition-colors hover:border-[color:var(--border-default)]"
                   >
                     <div
                       className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
@@ -547,7 +547,7 @@ export default function SettingsView() {
                         <button
                           type="button"
                           onClick={() => toggleKey(key)}
-                          className="mt-1.5 rounded-md bg-surface-lighter px-2.5 py-1 text-[11px] font-medium text-ink-secondary transition-colors hover:bg-surface-border/40"
+                          className="mt-1.5 rounded-md bg-surface-lighter px-3 py-1 text-[11px] font-medium text-ink-secondary transition-colors hover:bg-surface-border/40"
                         >
                           {configured ? "•••••••• (saved)" : "Enter key…"}
                         </button>
@@ -668,13 +668,13 @@ export default function SettingsView() {
                     setSettings({ ...settings, agency_accent: e.target.value });
                     if (accentError) validateAccent(e.target.value);
                   }}
-                  placeholder="#0891B2"
+                  placeholder="#RRGGBB"
                   hint="Hex color for report branding"
                   error={accentError}
                 />
-                <div className="mt-[22px] flex items-center gap-2.5 rounded-lg bg-surface-lighter/60 px-3 py-2">
+                <div className="mt-[22px] flex items-center gap-2 rounded-lg bg-surface-lighter/60 px-3 py-2">
                   <span
-                    className="h-8 w-8 shrink-0 rounded-md border border-[color:var(--border-default)] shadow-sm"
+                    className="h-8 w-8 shrink-0 rounded-md border border-[color:var(--border-default)] shadow-panel"
                     style={{ backgroundColor: accentColor }}
                     aria-label={`Report accent preview: ${accentColor}`}
                   />
@@ -774,7 +774,7 @@ export default function SettingsView() {
             </div>
 
             {settings.database_path && (
-              <p className="mb-3 break-all rounded-lg bg-surface-lighter/60 px-3.5 py-2.5 font-mono text-[11px] leading-relaxed text-ink-dim">
+              <p className="mb-3 break-all rounded-lg bg-surface-lighter/60 px-4 py-3 font-mono text-[11px] leading-relaxed text-ink-dim">
                 {settings.database_path}
               </p>
             )}
@@ -823,7 +823,7 @@ export default function SettingsView() {
       {/* Sticky save bar */}
       {settings && isDirty && (
         <div
-          className="animate-fade-up fixed bottom-0 left-0 right-0 z-30 flex items-center justify-between px-6 py-3 lg:left-[var(--rail-w)] lg:px-8"
+          className="animate-fade-up fixed bottom-0 left-0 right-0 z-30 flex items-center justify-between px-6 py-3 lg:left-[var(--rail-w)] lg:px-6"
           style={{
             background: "color-mix(in srgb, var(--surface-elevated) 92%, transparent)",
             backdropFilter: "blur(12px)",

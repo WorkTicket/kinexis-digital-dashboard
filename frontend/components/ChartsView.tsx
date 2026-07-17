@@ -6,9 +6,11 @@ import { Metric, api } from "@/lib/api";
 import { downloadCSV } from "@/lib/utils";
 import { seriesByDate, PAID_SOURCES } from "@/lib/metrics";
 import { CHART } from "@/lib/chartTheme";
-import { ChevronDown, ChevronUp, Download, Layers, TrendingUp, GitCompare } from "lucide-react";
+import { Download, Layers, TrendingUp, GitCompare } from "lucide-react";
 import { Panel } from "@/components/ui/Panel";
+import { Stat } from "@/components/ui/Stat";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
 import type { PeriodOption } from "@/lib/metrics";
 
 type TrendDef = {
@@ -67,7 +69,6 @@ export default function ChartsView({ metrics, clientId }: Props) {
   const [period, setPeriod] = useState<PeriodOption>("30d");
   const [showProjection, setShowProjection] = useState(false);
   const [compareDays, setCompareDays] = useState<number>(0);
-  const [expanded, setExpanded] = useState(false);
   const [gridSize, setGridSize] = useState<(typeof GRID_SIZES)[number]>("2-col");
   const [events, setEvents] = useState<KnownEventOverlay[]>([]);
 
@@ -109,7 +110,8 @@ export default function ChartsView({ metrics, clientId }: Props) {
     [metrics, lookbackDays]
   );
 
-  const visible = expanded ? liveTrends : liveTrends.slice(0, 6);
+  const primaryTrends = liveTrends.slice(0, 6);
+  const extraTrends = liveTrends.slice(6);
 
   const gridClass = useMemo(() => {
     switch (gridSize) {
@@ -161,9 +163,9 @@ export default function ChartsView({ metrics, clientId }: Props) {
               key={p.value}
               type="button"
               onClick={() => setPeriod(p.value)}
-              className={`rounded-md px-2.5 py-1 text-[12px] font-medium transition-all duration-micro ${
+              className={`rounded-md px-3 py-1 text-[12px] font-medium transition-all duration-micro ${
                 period === p.value
-                  ? "bg-surface-elevated text-ink shadow-sm"
+                  ? "bg-surface-elevated text-ink shadow-panel"
                   : "text-muted hover:text-ink-secondary"
               }`}
             >
@@ -182,7 +184,7 @@ export default function ChartsView({ metrics, clientId }: Props) {
           <button
             type="button"
             onClick={() => setShowProjection((p) => !p)}
-            className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all duration-micro ${
+            className={`rounded-md px-3 py-1 text-[11px] font-medium transition-all duration-micro ${
               showProjection
                 ? "bg-kinexis-focus/10 text-kinexis-focus"
                 : "text-muted hover:text-ink-secondary"
@@ -199,7 +201,7 @@ export default function ChartsView({ metrics, clientId }: Props) {
                 onClick={() => setCompareDays(opt.value)}
                 className={`rounded-md px-2 py-1 text-[11px] font-medium transition-all duration-micro ${
                   compareDays === opt.value
-                    ? "bg-surface-elevated text-ink shadow-sm"
+                    ? "bg-surface-elevated text-ink shadow-panel"
                     : "text-muted hover:text-ink-secondary"
                 }`}
               >
@@ -222,7 +224,7 @@ export default function ChartsView({ metrics, clientId }: Props) {
       </div>
 
       {compareDays > 0 && (
-        <div className="flex items-center gap-2 rounded-lg border border-kinexis-focus/20 bg-kinexis-focus/5 px-3 py-1.5 text-xs text-ink-secondary">
+        <div className="flex items-center gap-2 rounded-lg border border-kinexis-focus/20 bg-kinexis-focus/5 px-3 py-2 text-xs text-ink-secondary">
           <GitCompare size={12} className="text-kinexis-focus" />
           Comparing current period with {compareDays}d prior — dashed line shows the previous period
         </div>
@@ -238,54 +240,32 @@ export default function ChartsView({ metrics, clientId }: Props) {
 
       {totalMetrics && liveTrends.length > 0 && (
         <div className="grid grid-cols-3 gap-2">
-          <div className="panel !p-2.5">
-            <span className="text-muted text-[11px] font-medium">Latest clicks</span>
-            <p className="font-mono-data mt-0.5 text-sm font-semibold text-ink">
-              {totalMetrics.clicks.toLocaleString()}
-            </p>
-          </div>
-          <div className="panel !p-2.5">
-            <span className="text-muted text-[11px] font-medium">Latest sessions</span>
-            <p className="font-mono-data mt-0.5 text-sm font-semibold text-ink">
-              {totalMetrics.sessions.toLocaleString()}
-            </p>
-          </div>
-          <div className="panel !p-2.5">
-            <span className="text-muted text-[11px] font-medium">Latest conversions</span>
-            <p className="font-mono-data mt-0.5 text-sm font-semibold text-ink">
-              {totalMetrics.conversions.toLocaleString()}
-            </p>
-          </div>
+          <Stat
+            label="Latest clicks"
+            value={totalMetrics.clicks.toLocaleString()}
+            className="!min-w-0 !p-3 [&_.text-metric]:!mt-1 [&_.text-metric]:!text-[0.95rem]"
+          />
+          <Stat
+            label="Latest sessions"
+            value={totalMetrics.sessions.toLocaleString()}
+            className="!min-w-0 !p-3 [&_.text-metric]:!mt-1 [&_.text-metric]:!text-[0.95rem]"
+          />
+          <Stat
+            label="Latest conversions"
+            value={totalMetrics.conversions.toLocaleString()}
+            className="!min-w-0 !p-3 [&_.text-metric]:!mt-1 [&_.text-metric]:!text-[0.95rem]"
+          />
         </div>
       )}
 
       {liveTrends.length > 0 && (
         <div>
-          <div className="mb-4 flex items-center justify-between">
-            <p className="text-muted text-xs">
-              {liveTrends.length} series
-              {!expanded && liveTrends.length > 6 && " \u00b7 showing top 6"}
-            </p>
-            {liveTrends.length > 6 && (
-              <button
-                type="button"
-                onClick={() => setExpanded((v) => !v)}
-                className="text-muted flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium hover:text-ink-secondary"
-              >
-                {expanded ? (
-                  <>
-                    <ChevronUp size={12} /> Collapse
-                  </>
-                ) : (
-                  <>
-                    <ChevronDown size={12} /> Show all
-                  </>
-                )}
-              </button>
-            )}
-          </div>
+          <p className="text-muted mb-4 text-xs">
+            {liveTrends.length} series
+            {extraTrends.length > 0 && " · showing top 6"}
+          </p>
           <div className={`grid ${gridClass} gap-3`}>
-            {visible.map((t) => (
+            {primaryTrends.map((t) => (
               <DashboardChart
                 key={`${t.source || "paid"}-${t.metricName}-${t.label}-${lookbackDays}`}
                 metrics={metrics}
@@ -301,6 +281,27 @@ export default function ChartsView({ metrics, clientId }: Props) {
               />
             ))}
           </div>
+          {extraTrends.length > 0 && (
+            <CollapsibleSection label={`${extraTrends.length} more series`} className="!mt-2">
+              <div className={`grid ${gridClass} gap-3`}>
+                {extraTrends.map((t) => (
+                  <DashboardChart
+                    key={`${t.source || "paid"}-${t.metricName}-${t.label}-${lookbackDays}-extra`}
+                    metrics={metrics}
+                    metricName={t.metricName}
+                    label={t.label}
+                    color={t.color}
+                    source={t.source}
+                    sources={t.sources}
+                    projectionDays={showProjection ? 30 : 0}
+                    lookbackDays={lookbackDays}
+                    compareDays={compareDays > 0 ? compareDays : 0}
+                    events={events.length > 0 ? events : undefined}
+                  />
+                ))}
+              </div>
+            </CollapsibleSection>
+          )}
         </div>
       )}
     </div>

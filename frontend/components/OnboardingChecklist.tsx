@@ -88,9 +88,9 @@ const STEPS: {
   },
   {
     id: "situation",
-    label: "Review Situation",
-    hint: "Detect → Situation — see the top growth lever",
-    cta: "Open Situation",
+    label: "Open Detect",
+    hint: "Detect — see the top growth lever and next move",
+    cta: "Open Detect",
   },
   {
     id: "fix",

@@ -4,8 +4,6 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import {
   Zap,
   Clock,
-  ChevronDown,
-  ChevronRight,
   Plus,
   SkipForward,
   ExternalLink,
@@ -20,6 +18,7 @@ import { LoadingState } from "@/components/ui/LoadingState";
 import { Panel } from "@/components/ui/Panel";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
 import { motion } from "@/lib/motion";
 
 type Action = {
@@ -140,7 +139,7 @@ function ScorePill({ score, impact }: { score: number; impact: string }) {
         ? "border-kinexis-signal/40 text-kinexis-signal"
         : "border-kinexis-risk/40 text-kinexis-risk";
   return (
-    <div className="flex shrink-0 items-center gap-2.5">
+    <div className="flex shrink-0 items-center gap-2">
       <div
         className={`flex h-7 w-7 items-center justify-center border ${color} font-mono-data text-[11px] font-semibold`}
         style={{ borderRadius: "var(--radius-sm)" }}
@@ -169,7 +168,6 @@ export default function ActionBoard({
     content: Action[];
     created_at: string;
   } | null>(null);
-  const [expanded, setExpanded] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
@@ -269,14 +267,6 @@ export default function ActionBoard({
     [sorted, skippedTitles]
   );
 
-  const toggle = (idx: number) => {
-    setExpanded((prev) => {
-      const next = new Set(prev);
-      next.has(idx) ? next.delete(idx) : next.add(idx);
-      return next;
-    });
-  };
-
   const createWorkItem = async (action: Action, idx: number) => {
     setCreatingIdx(idx);
     try {
@@ -350,7 +340,7 @@ export default function ActionBoard({
               ].join("\n") || "",
           });
         }
-        success("Opened in Cursor — track progress in Execute", {
+        success("Assigned — track progress in Execute", {
           action: {
             label: "Go to Execute",
             onClick: () => onGoToExecute?.(),
@@ -377,7 +367,7 @@ export default function ActionBoard({
   };
 
   if (loading) {
-    return <LoadingState label="Loading board…" variant="spinner" className="animate-fade-up" />;
+    return <LoadingState label="Loading board…" variant="board" className="animate-fade-up" />;
   }
 
   if (loadError && !plan) {
@@ -480,14 +470,10 @@ export default function ActionBoard({
               } ${motion.micro} ${motion.loadIn} ${motion.staggerClass(idx % 4)}`}
             >
               <div className="flex items-stretch">
-                <button
-                  type="button"
-                  onClick={() => toggle(idx)}
-                  className="motion-micro flex min-w-0 flex-1 items-center gap-3 p-3.5 text-left hover:bg-[color:var(--hover-fill)]"
-                >
+                <div className="flex min-w-0 flex-1 items-center gap-3 p-4">
                   <ScorePill score={action.priority_score} impact={action.estimated_impact} />
                   <div className="min-w-0 flex-1">
-                    <div className="mb-0.5 flex flex-wrap items-center gap-1.5">
+                    <div className="mb-0.5 flex flex-wrap items-center gap-2">
                       <Badge
                         className={categoryColors[action.category] || categoryColors.analytics}
                       >
@@ -502,16 +488,11 @@ export default function ActionBoard({
                       </p>
                     )}
                   </div>
-                  {expanded.has(idx) ? (
-                    <ChevronDown size={14} strokeWidth={1.75} className="text-muted shrink-0" />
-                  ) : (
-                    <ChevronRight size={14} strokeWidth={1.75} className="text-muted shrink-0" />
-                  )}
-                </button>
+                </div>
 
-                <div className="flex shrink-0 items-center gap-1 pr-2.5">
+                <div className="flex shrink-0 items-center gap-1 px-3">
                   {isAssigned ? (
-                    <div className="flex items-center gap-1.5 px-2 text-[12px] font-medium text-kinexis-focus">
+                    <div className="flex items-center gap-2 px-2 text-[12px] font-medium text-kinexis-focus">
                       <span className="h-1.5 w-1.5 rounded-full bg-kinexis-focus" />
                       In Execute
                       <ExternalLink size={10} />
@@ -525,7 +506,7 @@ export default function ActionBoard({
                         title={
                           cursorAvailable &&
                           assigneeForPlaybook(action.playbook_pattern) === "Cursor"
-                            ? "Assign & open in Cursor"
+                            ? "Assign and open in editor"
                             : "Create work item"
                         }
                       >
@@ -547,9 +528,9 @@ export default function ActionBoard({
                 </div>
               </div>
 
-              {expanded.has(idx) && (
-                <div className="border-t border-[color:var(--border-subtle)] bg-surface px-4 pb-4">
-                  <div className="space-y-3 pt-3">
+              <div className="border-t border-[color:var(--border-subtle)] px-4 pb-3">
+                <CollapsibleSection label="plan details" defaultOpen={false} className="!mt-0">
+                  <div className="space-y-3">
                     {action.target_url && (
                       <p className="font-mono-data text-[11px] text-kinexis-focus">
                         Page: {action.target_url}
@@ -570,7 +551,7 @@ export default function ActionBoard({
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         {action.current_state && (
                           <div>
-                            <p className="text-label mb-1.5">Current on page</p>
+                            <p className="text-label mb-2">Current on page</p>
                             <ul className="space-y-1">
                               {Object.entries(action.current_state).map(([k, v]) => (
                                 <li
@@ -585,7 +566,7 @@ export default function ActionBoard({
                         )}
                         {action.proposed_changes && (
                           <div>
-                            <p className="text-label mb-1.5">Ship this copy</p>
+                            <p className="text-label mb-2">Ship this copy</p>
                             <ul className="space-y-1">
                               {Object.entries(action.proposed_changes).map(([k, v]) => (
                                 <li key={k} className="text-[12px] leading-relaxed text-ink">
@@ -601,7 +582,7 @@ export default function ActionBoard({
 
                     {(action.steps || []).length > 0 && (
                       <div>
-                        <p className="text-label mb-1.5">Execution steps</p>
+                        <p className="text-label mb-2">Execution steps</p>
                         <ol className="space-y-1">
                           {action.steps.map((step, si) => (
                             <li
@@ -618,7 +599,7 @@ export default function ActionBoard({
                       </div>
                     )}
 
-                    <div className="flex flex-wrap gap-5">
+                    <div className="flex flex-wrap gap-4">
                       {(action.metrics_to_watch || []).length > 0 && (
                         <div>
                           <p className="text-label mb-1">Success metrics</p>
@@ -639,8 +620,8 @@ export default function ActionBoard({
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
+                </CollapsibleSection>
+              </div>
             </Panel>
           );
         })}

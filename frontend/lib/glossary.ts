@@ -1,7 +1,8 @@
 /**
  * Kinexis product glossary — master labels, blurbs, and ⌘K hints.
  *
- * Stages form a closed loop: Detect → Prescribe → Execute → Prove → Report → Detect
+ * Stages form a closed loop: Detect → Prescribe → Execute → Prove → (Report) → Detect
+ * Report is the output destination, not a peer work stage.
  * Blurbs ≤140 chars: "See X. Do Y."
  */
 export const STAGE = {
@@ -14,12 +15,12 @@ export const STAGE = {
 } as const;
 
 export const STAGE_BLURB = {
-  detect: "See the next move. Open Evidence for charts & explore. Assign only in Prescribe.",
+  detect: "See the next move. Dig into Evidence for charts. Assign only in Prescribe.",
   charts: "Trend charts — open from Detect → Evidence.",
-  prescribe: "The only place to Assign. Fix queue, AI plan, and briefs.",
+  prescribe: "The only place to Assign. One top fix, then the queue.",
   execute: "Work queue. Track and complete open work.",
-  prove: "Before/after lift. Mark win, loss, or flat.",
-  report: "Success reports. Generate a monthly PDF.",
+  prove: "Before/after lift. Mark win, loss, or flat — then pack into Report.",
+  report: "Client-ready proof of work — then return to Detect for the next move.",
 } as const;
 
 export const DETECT = {

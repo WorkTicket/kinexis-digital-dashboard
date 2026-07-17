@@ -73,7 +73,7 @@ export function OfflineBanner() {
     <div
       role="status"
       aria-live="polite"
-      className="animate-fade-up flex items-center justify-center gap-2 px-3 py-1.5 text-[12px] font-medium"
+      className="animate-fade-up flex items-center justify-center gap-2 px-3 py-2 text-[12px] font-medium"
       style={{
         background: showBack ? "var(--kinexis-proof)" : "var(--kinexis-signal)",
         color: "var(--kinexis-ink)",

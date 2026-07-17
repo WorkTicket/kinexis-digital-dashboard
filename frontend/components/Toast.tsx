@@ -97,7 +97,7 @@ function ToastCard({ item, onDismiss }: { item: ToastItem; onDismiss: (id: numbe
 
   return (
     <div
-      className={`animate-scale-in pointer-events-auto flex items-start gap-2.5 border px-3.5 py-3 ${tone}`}
+      className={`animate-scale-in pointer-events-auto flex items-start gap-2 border px-4 py-3 ${tone}`}
       style={{ borderRadius: "var(--radius-md)" }}
       role={isError ? "alert" : "status"}
       onMouseEnter={pause}

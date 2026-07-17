@@ -124,7 +124,7 @@ export default function ConfirmDialog({
             type="button"
             onClick={() => void onConfirm()}
             disabled={busy}
-            className={`btn-primary !px-3.5 !py-2 ${
+            className={`btn-primary !px-4 !py-2 ${
               danger ? "!bg-kinexis-risk hover:!bg-kinexis-risk/90" : ""
             }`}
           >

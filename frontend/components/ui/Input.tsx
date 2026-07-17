@@ -67,7 +67,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           <button
             type="button"
             onClick={() => setShowPassword((v) => !v)}
-            className="text-muted motion-micro absolute right-2 top-1/2 -translate-y-1/2 p-1.5 hover:text-ink-secondary"
+            className="text-muted motion-micro absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:text-ink-secondary"
             style={{ borderRadius: "var(--radius-sm)" }}
             aria-label={showPassword ? "Hide password" : "Show password"}
           >

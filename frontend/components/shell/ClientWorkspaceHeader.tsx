@@ -88,12 +88,12 @@ export default function ClientWorkspaceHeader({
     <header className="war-room-context animate-fade-up mb-6">
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[color:var(--border-subtle)] pb-4">
         <div className="min-w-0 flex-1">
-          <div className="mb-1.5 flex flex-wrap items-center gap-2.5">
+          <div className="mb-1.5 flex flex-wrap items-center gap-2">
             <h1 className="text-title truncate text-[22px] sm:text-[26px]">
               {client?.name || "…"}
             </h1>
             {loading && hasLoadedOnce && (
-              <span className="text-muted inline-flex items-center gap-1.5 text-[11px] font-medium">
+              <span className="text-muted inline-flex items-center gap-2 text-[11px] font-medium">
                 <span
                   className="h-3 w-3 animate-spin rounded-full border-2 border-[color:var(--border-default)] border-t-kinexis-focus"
                   aria-hidden
@@ -124,7 +124,7 @@ export default function ClientWorkspaceHeader({
 
       {showIndustry && (
         <div
-          className="animate-fade-up mt-4 max-w-2xl space-y-4 border border-[color:var(--border-subtle)] bg-[color:var(--surface)] p-4 sm:p-5"
+          className="animate-fade-up mt-4 max-w-2xl space-y-4 border border-[color:var(--border-subtle)] bg-[color:var(--surface)] p-4 sm:p-4"
           style={{ borderRadius: "var(--radius-lg)" }}
         >
           <div className="flex flex-wrap gap-1">
@@ -138,7 +138,7 @@ export default function ClientWorkspaceHeader({
                 key={id}
                 type="button"
                 onClick={() => onProfileSectionChange(id)}
-                className={`motion-micro px-3 py-1.5 text-[12px] font-medium ${
+                className={`motion-micro px-3 py-2 text-[12px] font-medium ${
                   profilePanelSection === id
                     ? "bg-kinexis-focus/10 text-kinexis-focus"
                     : "text-muted hover:text-ink-secondary"

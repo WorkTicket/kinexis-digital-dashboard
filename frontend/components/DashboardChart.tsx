@@ -222,11 +222,11 @@ function DashboardChart({
         </ComposedChart>
       </ResponsiveContainer>
       {chartEvents.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-1.5">
+        <div className="mt-2 flex flex-wrap gap-2">
           {chartEvents.map((ev) => (
             <span
               key={ev.name}
-              className="inline-flex items-center gap-1 rounded bg-kinexis-signal/10 px-1.5 py-0.5 text-[11px] text-kinexis-signal"
+              className="inline-flex items-center gap-1 rounded bg-kinexis-signal/10 px-2 py-0.5 text-[11px] text-kinexis-signal"
               title={`${ev.name}: ${ev.start} \u2013 ${ev.end}`}
             >
               {ev.type === "core_update" ? "Core Update" : "Seasonal"}: {ev.name}

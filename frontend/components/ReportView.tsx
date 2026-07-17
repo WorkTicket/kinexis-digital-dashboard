@@ -1,7 +1,6 @@
 "use client";
 
-import { Printer, FileDown, ArrowLeft, RefreshCw, Copy, Bot } from "lucide-react";
-import { generateAiContext } from "@/components/report/reportUtils";
+import { Printer, FileDown, ArrowLeft, RefreshCw, Copy } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -72,13 +71,6 @@ export default function ReportView({
     }
   };
 
-  const copyAiContext = () => {
-    if (typeof window === "undefined" || !rv.report) return;
-    const context = generateAiContext(rv.report, rv.provenLevers);
-    void navigator.clipboard?.writeText(context);
-    toastSuccess("AI context copied — paste into Claude for improvement recommendations");
-  };
-
   if (rv.screen === "library") {
     return (
       <ReportLibraryPanel
@@ -117,7 +109,7 @@ export default function ReportView({
           </Button>
           <div>
             <p className="section-label text-muted mb-1 text-[11px] font-semibold tracking-wide">
-              Report studio
+              Client pack
             </p>
             <h2 className="text-display text-[24px] leading-tight sm:text-[28px]">
               Client success report
@@ -129,7 +121,7 @@ export default function ReportView({
             </p>
           </div>
         </div>
-        <div className="flex flex-col items-stretch gap-2 sm:items-end">
+        <div className="flex flex-col items-stretch gap-3 sm:items-end">
           <div className="flex flex-wrap justify-end gap-2">
             <Button
               onClick={() => void rv.downloadPdf()}
@@ -142,19 +134,13 @@ export default function ReportView({
             <Button variant="soft" onClick={rv.openPrintable} disabled={!rv.report}>
               <Printer size={13} /> Open HTML / Print
             </Button>
-            <Button variant="ghost" size="sm" onClick={copyAiContext} disabled={!rv.report}>
-              <Bot size={12} /> Copy for AI
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => void copyClientReportLink()}
-              disabled={!rv.report}
-            >
-              <Copy size={12} /> Client report link
+          </div>
+          <div className="flex flex-wrap items-center justify-end gap-3">
+            <Button variant="ghost" size="sm" onClick={() => void copyClientReportLink()} disabled={!rv.report}>
+              <Copy size={12} /> Share with client
             </Button>
             <Button variant="ghost" size="sm" onClick={() => void copyPulseLink()}>
-              <Copy size={12} /> Client Pulse link
+              <Copy size={12} /> Share pulse
             </Button>
             <Button
               variant="ghost"
@@ -167,21 +153,17 @@ export default function ReportView({
             </Button>
           </div>
           {rv.checklist && rv.exportBlocked && !rv.report?.from_cache && (
-            <p className="max-w-xs text-right text-xs leading-relaxed text-kinexis-signal">
-              Export soft-blocked until readiness checklist is stronger. You can still open HTML.
+            <p className="max-w-xs text-right text-xs leading-relaxed text-muted">
+              PDF is ready to share; a stronger checklist will raise confidence for QBRs.
             </p>
           )}
-          <p className="text-muted max-w-xs text-right text-xs leading-relaxed">
-            Client portal: copy Pulse or report links after enabling Client portal in Settings
-            (public HTTPS URL via Cloudflare Tunnel / ngrok). Or Download PDF / Open HTML → Print.
-          </p>
         </div>
       </div>
 
       {rv.viewerLoading || rv.generating ? (
         <LoadingState
           label={rv.generating ? "Generating report…" : "Opening report…"}
-          variant="spinner"
+          variant={rv.generating ? "cards" : "spinner"}
         />
       ) : rv.viewerError || !rv.report ? (
         <ErrorState

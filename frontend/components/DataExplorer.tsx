@@ -14,6 +14,7 @@ import {
 } from "recharts";
 import { api, Opportunities } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
+import { Panel } from "@/components/ui/Panel";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
@@ -69,7 +70,7 @@ export default function DataExplorer({ clientId, days, onDaysChange }: Props) {
           <h2 className="section-label">Opportunity explorer</h2>
           <p className="section-title">Queries, CTR gaps, and landing-page conversion.</p>
         </div>
-        <div className="flex gap-1.5">
+        <div className="flex gap-2">
           {[14, 28, 56].map((d) => (
             <Button
               key={d}
@@ -123,8 +124,8 @@ export default function DataExplorer({ clientId, days, onDaysChange }: Props) {
             ])}
           />
 
-          <section className="panel overflow-hidden">
-            <div className="border-b border-surface-border/80 px-5 py-3.5">
+          <Panel className="overflow-hidden" padding={false}>
+            <div className="border-b border-surface-border/80 px-4 py-4">
               <p className="text-sm font-semibold text-ink">
                 Landing pages · traffic vs conversion
               </p>
@@ -134,7 +135,7 @@ export default function DataExplorer({ clientId, days, onDaysChange }: Props) {
               </p>
             </div>
             {scatterData.length === 0 ? (
-              <p className="text-muted px-5 py-6 text-sm">
+              <p className="text-muted px-4 py-6 text-sm">
                 No landing page data. Connect GA4 and sync to populate this view.
               </p>
             ) : (
@@ -232,7 +233,7 @@ export default function DataExplorer({ clientId, days, onDaysChange }: Props) {
                 />
               </>
             )}
-          </section>
+          </Panel>
         </>
       )}
     </div>
@@ -254,14 +255,14 @@ function Table({
 }) {
   const body =
     rows.length === 0 ? (
-      <p className="text-muted px-5 py-6 text-sm">{empty}</p>
+      <p className="text-muted px-4 py-6 text-sm">{empty}</p>
     ) : (
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-muted border-b border-surface-border/60 text-left text-[12px] font-medium">
               {headers.map((h) => (
-                <th key={h} className="whitespace-nowrap px-4 py-2.5 font-semibold">
+                <th key={h} className="whitespace-nowrap px-4 py-3 font-semibold">
                   {h}
                 </th>
               ))}
@@ -273,7 +274,7 @@ function Table({
                 {row.map((cell, j) => (
                   <td
                     key={j}
-                    className={`px-4 py-2.5 ${j === 0 ? "max-w-[280px] truncate text-ink" : "font-mono-data text-muted"}`}
+                    className={`px-4 py-3 ${j === 0 ? "max-w-[280px] truncate text-ink" : "font-mono-data text-muted"}`}
                     title={j === 0 ? cell : undefined}
                   >
                     {cell}
@@ -291,11 +292,11 @@ function Table({
   }
 
   return (
-    <section className="panel overflow-hidden">
-      <div className="border-b border-surface-border/80 px-5 py-3.5">
+    <Panel className="overflow-hidden" padding={false}>
+      <div className="border-b border-surface-border/80 px-4 py-4">
         <p className="text-sm font-semibold text-ink">{title}</p>
       </div>
       {body}
-    </section>
+    </Panel>
   );
 }

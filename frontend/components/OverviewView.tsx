@@ -16,6 +16,7 @@ import { ArrowRight, TrendingUp, BarChart3, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Stat } from "@/components/ui/Stat";
+import { Panel } from "@/components/ui/Panel";
 import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
 import { useToast } from "@/components/Toast";
 
@@ -188,58 +189,33 @@ export default function OverviewView({
 
   return (
     <div className="animate-fade-up space-y-6">
-      {/* Dominant: situation + next move */}
-      <section className="mission-hero !mb-0 !border-b-0 !pb-0">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <p className="section-label text-muted text-[11px] font-semibold tracking-wide">
-              Next move
-            </p>
-            <Badge tone={healthIndicator.tone}>{healthIndicator.label}</Badge>
-          </div>
-          <div className="flex rounded-md border border-[color:var(--border-subtle)] p-0.5">
-            {(
-              [
-                { value: "7d" as const, label: "7d" },
-                { value: "30d" as const, label: "30d" },
-              ] as const
-            ).map((p) => (
-              <button
-                key={p.value}
-                type="button"
-                onClick={() => setPeriod(p.value)}
-                className={`motion-micro rounded-[calc(var(--radius-md)-2px)] px-2.5 py-1 text-[12px] font-medium ${
-                  period === p.value
-                    ? "bg-[color:var(--surface-elevated)] text-ink shadow-panel"
-                    : "text-muted hover:text-ink-secondary"
-                }`}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
+      {/* Next move leads — morning answer before health chrome */}
+      <Panel padding="lg" className="mission-hero !mb-0 border-kinexis-focus/15">
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <p className="section-label text-muted text-[11px] font-semibold tracking-wide">
+            Next move
+          </p>
+          <Badge tone={healthIndicator.tone}>{healthIndicator.label}</Badge>
         </div>
 
         {growthLever ? (
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-8">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-6">
             <GrowthLeverGauge
               score={growthLever.score}
               confidence={growthLever.confidence}
-              size={112}
+              size={96}
               className="mx-auto sm:mx-0"
             />
             <div className="min-w-0 flex-1">
               <div className="mb-2 flex flex-wrap items-center gap-2">
                 <span className="text-[12px] font-semibold text-kinexis-focus">
-                  Top growth lever
+                  Do this next
                 </span>
                 {growthLever.confidence && <Badge tone="default">{growthLever.confidence}</Badge>}
               </div>
-              <h2 className="text-display text-[24px] leading-tight sm:text-[28px]">
-                {growthLever.title}
-              </h2>
+              <h3 className="text-title text-[18px] leading-tight">{growthLever.title}</h3>
               {growthLever.cause && (
-                <p className="text-muted mt-3 max-w-2xl text-[14px] leading-relaxed">
+                <p className="text-muted mt-3 max-w-2xl text-[13px] leading-relaxed">
                   {growthLever.cause}
                 </p>
               )}
@@ -258,7 +234,7 @@ export default function OverviewView({
                   ))}
                 </ol>
               )}
-              <div className="mt-5">
+              <div className="mt-4">
                 <Button variant="primary" size="sm" onClick={onStartFix}>
                   <Zap size={12} /> Open Fix queue <ArrowRight size={13} />
                 </Button>
@@ -274,21 +250,31 @@ export default function OverviewView({
               <BarChart3 size={22} className="text-muted" strokeWidth={1.5} />
             </div>
             <div className="min-w-0">
-              <h2 className="text-title text-[20px]">Waiting for data</h2>
+              <h3 className="text-title text-[18px]">Waiting for data</h3>
               <p className="text-muted mt-1.5 max-w-md text-[13px] leading-relaxed">
-                Sync sources so we can surface the one lever that matters for this client.
+                Sync sources so we can name the one lever that matters for this client.
               </p>
             </div>
           </div>
         )}
-      </section>
+      </Panel>
+
+      <ClientHealth
+        clientId={clientId}
+        insights={insights}
+        clientName={clientName}
+        overdueTasks={overdueTasks}
+        staleDays={staleDays}
+        daysSinceRelaunch={daysSinceRelaunch}
+        onOpenFunnel={onOpenFunnel}
+      />
 
       {movers.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {movers.map((k) => (
             <div
               key={k.key}
-              className="inline-flex items-center gap-1.5 text-[12px] text-ink-secondary"
+              className="inline-flex items-center gap-2 text-[12px] text-ink-secondary"
             >
               <TrendingUp size={11} className="text-kinexis-proof" />
               {k.label}{" "}
@@ -300,25 +286,35 @@ export default function OverviewView({
         </div>
       )}
 
-      <CollapsibleSection label="Pulse KPIs" defaultOpen={false}>
+      <CollapsibleSection label="Pulse KPIs" defaultOpen>
+        <div className="mb-3 flex justify-end">
+          <div className="flex rounded-md border border-[color:var(--border-subtle)] p-0.5">
+            {(
+              [
+                { value: "7d" as const, label: "7d" },
+                { value: "30d" as const, label: "30d" },
+              ] as const
+            ).map((p) => (
+              <button
+                key={p.value}
+                type="button"
+                onClick={() => setPeriod(p.value)}
+                className={`motion-micro rounded-[calc(var(--radius-md)-2px)] px-3 py-1 text-[12px] font-medium ${
+                  period === p.value
+                    ? "bg-[color:var(--surface-elevated)] text-ink shadow-panel"
+                    : "text-muted hover:text-ink-secondary"
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        </div>
         <KpiStats kpis={kpis} />
       </CollapsibleSection>
 
-      <CollapsibleSection label="Success scorecard" defaultOpen={false}>
+      <CollapsibleSection label="Success scorecard">
         <SuccessScorecard metrics={metrics} period={period} />
-      </CollapsibleSection>
-
-      <CollapsibleSection label="Health pillars" defaultOpen={false}>
-        <ClientHealth
-          clientId={clientId}
-          insights={insights}
-          clientName={clientName}
-          overdueTasks={overdueTasks}
-          staleDays={staleDays}
-          daysSinceRelaunch={daysSinceRelaunch}
-          onStartFix={onStartFix}
-          onOpenFunnel={onOpenFunnel}
-        />
       </CollapsibleSection>
     </div>
   );

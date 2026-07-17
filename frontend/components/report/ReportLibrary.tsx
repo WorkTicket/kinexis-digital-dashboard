@@ -17,6 +17,7 @@ import { LoadingState } from "@/components/ui/LoadingState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Badge } from "@/components/ui/Badge";
+import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { MONTH_NAMES } from "@/components/report/reportUtils";
 import { motion } from "@/lib/motion";
@@ -46,6 +47,67 @@ type Props = {
   onOpenSaved: (item: ReportLibraryItem) => void;
   onDeleteReport: (reportId: number) => void;
 };
+
+function ReadinessChecklist({
+  score,
+  statusLabel,
+  checklist,
+  library,
+}: {
+  score: number;
+  statusLabel: string;
+  checklist: ReportReadinessChecklist | undefined;
+  library: ReportLibrary | null;
+}) {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-muted text-[12px] font-semibold">Readiness</p>
+          <p className="mt-1 font-display text-display text-ink">{score}%</p>
+        </div>
+        <Badge
+          tone={
+            library?.status === "ready"
+              ? "success"
+              : library?.status === "stale"
+                ? "warning"
+                : "default"
+          }
+        >
+          {statusLabel}
+        </Badge>
+      </div>
+      <ul className="space-y-2">
+        {(
+          [
+            ["data_synced", "Data synced recently"],
+            ["work_or_proof", "Completed work or proven levers"],
+            ["has_saved_report", "At least one saved month"],
+            ["narrative_ready", "Narrative ready on a saved month"],
+          ] as const
+        ).map(([key, label]) => {
+          const ok = checklist?.[key];
+          return (
+            <li key={key} className="flex items-center gap-2 text-sm">
+              {ok ? (
+                <CheckCircle2 size={14} className="shrink-0 text-kinexis-proof" />
+              ) : (
+                <Circle size={14} className="text-muted shrink-0" />
+              )}
+              <span className={ok ? "text-ink-secondary" : "text-muted"}>{label}</span>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="text-muted text-[11px] leading-relaxed">
+        {library?.proven_lever_count || 0} proven levers · {library?.tasks_completed || 0} tasks
+        done · {library?.insights_open || 0} issues open
+        {library?.data_freshness ? ` · synced ${library.data_freshness.slice(0, 10)}` : ""}
+      </p>
+    </div>
+  );
+}
 
 export function ReportLibraryPanel({
   clientName,
@@ -82,6 +144,7 @@ export function ReportLibraryPanel({
       return sortNewest ? dateB.getTime() - dateA.getTime() : dateA.getTime() - dateB.getTime();
     });
   }, [library?.reports, sortNewest]);
+
   return (
     <div className="animate-fade-up space-y-6">
       <div className="mission-hero !mb-6">
@@ -96,7 +159,7 @@ export function ReportLibraryPanel({
       </div>
 
       {libraryLoading ? (
-        <LoadingState label="Loading library…" variant="spinner" />
+        <LoadingState label="Loading library…" variant="cards" />
       ) : libraryError ? (
         <ErrorState
           title="Library unavailable"
@@ -105,133 +168,98 @@ export function ReportLibraryPanel({
         />
       ) : (
         <>
-          <div className="grid gap-4 lg:grid-cols-3">
-            <Panel padding="lg" className="space-y-4 lg:col-span-1">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-muted text-[12px] font-semibold">Readiness</p>
-                  <p className="mt-1 font-display text-3xl text-ink">{score}%</p>
-                </div>
-                <Badge
-                  tone={
-                    library?.status === "ready"
-                      ? "success"
-                      : library?.status === "stale"
-                        ? "warning"
-                        : "default"
-                  }
-                >
-                  {statusLabel}
-                </Badge>
+          <div
+            ref={generatePanelRef}
+            className={highlightGenerate ? "ring-1 ring-kinexis-focus/40" : undefined}
+            style={
+              highlightGenerate
+                ? { borderRadius: "var(--radius-lg)" }
+                : undefined
+            }
+          >
+            <Panel padding="lg" className="space-y-6">
+              <div>
+                <p className="text-label">Generate deliverable</p>
+                <p className="mt-2 max-w-lg text-sm leading-relaxed text-ink-secondary">
+                  Builds the month, writes the narrative, and saves it to the library as a
+                  client-ready success pack.
+                </p>
               </div>
-              <ul className="space-y-2.5">
-                {(
-                  [
-                    ["data_synced", "Data synced recently"],
-                    ["work_or_proof", "Completed work or proven levers"],
-                    ["has_saved_report", "At least one saved month"],
-                    ["narrative_ready", "Narrative ready on a saved month"],
-                  ] as const
-                ).map(([key, label]) => {
-                  const ok = checklist?.[key];
-                  return (
-                    <li key={key} className="flex items-center gap-2 text-sm">
-                      {ok ? (
-                        <CheckCircle2 size={14} className="shrink-0 text-kinexis-proof" />
-                      ) : (
-                        <Circle size={14} className="text-muted shrink-0" />
-                      )}
-                      <span className={ok ? "text-ink-secondary" : "text-muted"}>{label}</span>
-                    </li>
-                  );
-                })}
-              </ul>
-              <p className="text-muted text-[11px] leading-relaxed">
-                {library?.proven_lever_count || 0} proven levers · {library?.tasks_completed || 0}{" "}
-                tasks done · {library?.insights_open || 0} issues open
-                {library?.data_freshness ? ` · synced ${library.data_freshness.slice(0, 10)}` : ""}
-              </p>
-            </Panel>
-
-            <div
-              ref={generatePanelRef}
-              className={`lg:col-span-2 ${highlightGenerate ? "ring-1 ring-kinexis-focus/40" : ""}`}
-              style={highlightGenerate ? { borderRadius: "var(--radius-lg)" } : undefined}
-            >
-              <Panel padding="lg" className="space-y-4">
-                <div>
-                  <p className="text-label">Generate</p>
-                  <p className="mt-1 text-sm text-ink-secondary">
-                    Builds the month, writes the narrative, and saves it to the library.
-                  </p>
-                </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  value={month}
+                  onChange={(e) => onMonthChange(Number(e.target.value))}
+                  className="input-field w-auto px-2 py-2 text-xs"
+                  aria-label="Month"
+                >
+                  {MONTH_NAMES.map((name, i) => (
+                    <option key={name} value={i + 1}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={year}
+                  onChange={(e) => onYearChange(Number(e.target.value))}
+                  className="input-field w-auto px-2 py-2 text-xs"
+                  aria-label="Year"
+                >
+                  {Array.from({ length: 6 }, (_, i) => new Date().getFullYear() - i).map((y) => (
+                    <option key={y} value={y}>
+                      {y}
+                    </option>
+                  ))}
+                </select>
+                <Button
+                  onClick={() => onGenerateMonth()}
+                  disabled={generating}
+                  className={generating ? motion.busy : undefined}
+                >
+                  <Sparkles size={13} />
+                  {generating ? "Generating…" : "Generate month"}
+                </Button>
+              </div>
+              <div className="border-t border-[color:var(--border-subtle)] pt-4">
+                <p className="text-label mb-2">Rolling preview</p>
                 <div className="flex flex-wrap items-center gap-2">
-                  <select
-                    value={month}
-                    onChange={(e) => onMonthChange(Number(e.target.value))}
-                    className="input-field w-auto px-2 py-1.5 text-xs"
-                    aria-label="Month"
-                  >
-                    {MONTH_NAMES.map((name, i) => (
-                      <option key={name} value={i + 1}>
-                        {name}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    value={year}
-                    onChange={(e) => onYearChange(Number(e.target.value))}
-                    className="input-field w-auto px-2 py-1.5 text-xs"
-                    aria-label="Year"
-                  >
-                    {Array.from({ length: 6 }, (_, i) => new Date().getFullYear() - i).map((y) => (
-                      <option key={y} value={y}>
-                        {y}
-                      </option>
-                    ))}
-                  </select>
+                  {[30, 60, 90].map((d) => (
+                    <button
+                      key={d}
+                      type="button"
+                      onClick={() => onDaysChange(d)}
+                      className={`chip ${days === d ? "chip-active" : ""}`}
+                    >
+                      {d}d
+                    </button>
+                  ))}
                   <Button
-                    onClick={() => onGenerateMonth()}
+                    variant="soft"
+                    size="sm"
+                    onClick={onGenerateRolling}
                     disabled={generating}
-                    className={generating ? motion.busy : undefined}
                   >
-                    <Sparkles size={13} />
-                    {generating ? "Generating…" : "Generate month"}
+                    Generate preview
                   </Button>
                 </div>
-                <div className="border-t border-[color:var(--border-subtle)] pt-3">
-                  <p className="text-label mb-2">Rolling preview</p>
-                  <div className="flex flex-wrap items-center gap-2">
-                    {[30, 60, 90].map((d) => (
-                      <button
-                        key={d}
-                        type="button"
-                        onClick={() => onDaysChange(d)}
-                        className={`chip ${days === d ? "chip-active" : ""}`}
-                      >
-                        {d}d
-                      </button>
-                    ))}
-                    <Button
-                      variant="soft"
-                      size="sm"
-                      onClick={onGenerateRolling}
-                      disabled={generating}
-                    >
-                      Generate preview
-                    </Button>
-                  </div>
-                  <p className="text-muted mt-2 text-[11px]">
-                    Rolling previews are not saved. Use monthly generate for client deliverables.
-                  </p>
-                </div>
-              </Panel>
-            </div>
+                <p className="text-muted mt-2 text-[11px]">
+                  Rolling previews are not saved. Use monthly generate for client deliverables.
+                </p>
+              </div>
+            </Panel>
           </div>
+
+          <CollapsibleSection label="readiness checklist" defaultOpen={false}>
+            <ReadinessChecklist
+              score={score}
+              statusLabel={statusLabel}
+              checklist={checklist}
+              library={library}
+            />
+          </CollapsibleSection>
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="section-label">Saved months</h3>
+              <h3 className="section-label text-muted">Saved months</h3>
               {(library?.reports?.length || 0) > 1 && (
                 <button
                   type="button"
@@ -256,12 +284,11 @@ export function ReportLibraryPanel({
                 }
               />
             ) : (
-              <div className="space-y-2">
+              <div className="divide-y divide-[color:var(--border-subtle)]">
                 {sortedReports.map((item) => (
-                  <Panel
+                  <div
                     key={item.id}
-                    padding="md"
-                    className="flex flex-wrap items-center justify-between gap-3"
+                    className="flex flex-wrap items-center justify-between gap-3 py-3"
                   >
                     <div className="min-w-0">
                       <p className="font-medium text-ink">
@@ -300,7 +327,7 @@ export function ReportLibraryPanel({
                         <Trash2 size={14} />
                       </button>
                     </div>
-                  </Panel>
+                  </div>
                 ))}
               </div>
             )}

@@ -15,6 +15,7 @@ import { api, KeywordHistory, RankingRow, RankingsReport } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Stat } from "@/components/ui/Stat";
+import { Panel } from "@/components/ui/Panel";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
@@ -264,7 +265,7 @@ export default function RankingsView({ clientId, days, onDaysChange, onSync }: P
           <h2 className="section-label">Google rankings</h2>
           <p className="section-title">Where this client ranks in Google Search.</p>
         </div>
-        <div className="flex gap-1.5">
+        <div className="flex gap-2">
           {[14, 28, 56].map((d) => (
             <button
               key={d}
@@ -327,19 +328,21 @@ export default function RankingsView({ clientId, days, onDaysChange, onSync }: P
             <Stat label="Tracked" value={String(summary?.tracked_count ?? 0)} hint="Watchlist" />
           </div>
 
-          <form onSubmit={handleAddKeyword} className="panel flex flex-wrap items-end gap-3 p-4">
-            <div className="min-w-[200px] flex-1">
-              <Input
-                label="Track a keyword"
-                placeholder="e.g. emergency plumber dallas"
-                value={newKeyword}
-                onChange={(e) => setNewKeyword(e.target.value)}
-              />
-            </div>
-            <Button type="submit" size="sm" disabled={busy || !newKeyword.trim()}>
-              <Pin size={14} className="mr-1.5 inline" />
-              Pin keyword
-            </Button>
+          <form onSubmit={handleAddKeyword}>
+            <Panel className="flex flex-wrap items-end gap-3" padding="md">
+              <div className="min-w-[200px] flex-1">
+                <Input
+                  label="Track a keyword"
+                  placeholder="e.g. emergency plumber dallas"
+                  value={newKeyword}
+                  onChange={(e) => setNewKeyword(e.target.value)}
+                />
+              </div>
+              <Button type="submit" size="sm" disabled={busy || !newKeyword.trim()}>
+                <Pin size={14} className="mr-1.5 inline" />
+                Pin keyword
+              </Button>
+            </Panel>
           </form>
 
           <div className="flex flex-wrap items-center gap-2">
@@ -390,7 +393,7 @@ export default function RankingsView({ clientId, days, onDaysChange, onSync }: P
                 className="text-muted pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2"
               />
               <input
-                className="input-field !py-1.5 !pl-8 !text-xs"
+                className="input-field !py-2 !pl-8 !text-xs"
                 placeholder="Filter queries…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -404,8 +407,8 @@ export default function RankingsView({ clientId, days, onDaysChange, onSync }: P
           </div>
 
           {selected && (
-            <section className="panel overflow-hidden">
-              <div className="flex items-center justify-between gap-3 border-b border-surface-border/80 px-5 py-3.5">
+            <Panel className="overflow-hidden" padding={false}>
+              <div className="flex items-center justify-between gap-3 border-b border-surface-border/80 px-4 py-4">
                 <div>
                   <p className="truncate text-sm font-semibold text-ink" title={selected}>
                     Position history · {selected}
@@ -421,7 +424,7 @@ export default function RankingsView({ clientId, days, onDaysChange, onSync }: P
               {historyLoading ? (
                 <LoadingState label="Loading history…" variant="spinner" compact />
               ) : !history?.history?.length ? (
-                <p className="text-muted px-5 py-8 text-sm">
+                <p className="text-muted px-4 py-6 text-sm">
                   No daily position history for this query yet. Sync GSC or wait for impressions.
                 </p>
               ) : (
@@ -487,7 +490,7 @@ export default function RankingsView({ clientId, days, onDaysChange, onSync }: P
                 </div>
               )}
               {(serpEnabled || serpResults) && (
-                <div className="border-t border-surface-border/80 px-5 py-4">
+                <div className="border-t border-surface-border/80 px-4 py-4">
                   <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                     <p className="text-[13px] font-semibold text-ink">Live SERP</p>
                     <Button
@@ -528,20 +531,20 @@ export default function RankingsView({ clientId, days, onDaysChange, onSync }: P
                   )}
                 </div>
               )}
-            </section>
+            </Panel>
           )}
 
-          <section className="panel overflow-hidden">
-            <div className="border-b border-surface-border/80 px-5 py-3.5">
+          <Panel className="overflow-hidden" padding={false}>
+            <div className="border-b border-surface-border/80 px-4 py-4">
               <p className="text-sm font-semibold text-ink">Keyword rankings</p>
               <p className="text-muted mt-0.5 text-xs">
                 Lower position is better. Change compares to the prior {days}-day window.
               </p>
             </div>
             {!data?.rankings?.length ? (
-              <p className="text-muted px-5 py-6 text-sm">No queries match these filters.</p>
+              <p className="text-muted px-4 py-6 text-sm">No queries match these filters.</p>
             ) : visibleRankings.length === 0 ? (
-              <p className="text-muted px-5 py-6 text-sm">
+              <p className="text-muted px-4 py-6 text-sm">
                 All queries hidden.{" "}
                 <button type="button" onClick={showAll} className="underline hover:text-ink">
                   Show all
@@ -552,8 +555,8 @@ export default function RankingsView({ clientId, days, onDaysChange, onSync }: P
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="text-muted border-b border-surface-border/60 text-left text-[12px] font-medium">
-                      <th className="w-10 px-4 py-2.5 font-semibold" />
-                      <th className="px-4 py-2.5 font-semibold">Query</th>
+                      <th className="w-10 px-4 py-3 font-semibold" />
+                      <th className="px-4 py-3 font-semibold">Query</th>
                       {(
                         [
                           { key: "position" as const, label: "Pos" },
@@ -567,7 +570,7 @@ export default function RankingsView({ clientId, days, onDaysChange, onSync }: P
                         return (
                           <th
                             key={col.key}
-                            className="cursor-pointer select-none whitespace-nowrap px-4 py-2.5 font-semibold hover:text-ink"
+                            className="cursor-pointer select-none whitespace-nowrap px-4 py-3 font-semibold hover:text-ink"
                             onClick={() => handleSort(col.key)}
                           >
                             <span className="inline-flex items-center gap-1">
@@ -578,7 +581,7 @@ export default function RankingsView({ clientId, days, onDaysChange, onSync }: P
                           </th>
                         );
                       })}
-                      <th className="w-8 px-2 py-2.5 font-semibold" />
+                      <th className="w-8 px-2 py-3 font-semibold" />
                     </tr>
                   </thead>
                   <tbody>
@@ -601,7 +604,7 @@ export default function RankingsView({ clientId, days, onDaysChange, onSync }: P
                 </table>
               </div>
             )}
-          </section>
+          </Panel>
         </>
       )}
     </div>
@@ -633,12 +636,12 @@ function RankingTableRow({
       }`}
       onClick={onSelect}
     >
-      <td className="px-3 py-2.5">
+      <td className="px-3 py-3">
         <button
           type="button"
           disabled={busy}
           title={row.tracked ? "Unpin keyword" : "Pin keyword"}
-          className={`rounded-md p-1.5 ${
+          className={`rounded-md p-2 ${
             row.tracked ? "bg-kinexis-focus/10 text-kinexis-focus" : "text-muted hover:text-ink"
           }`}
           onClick={(e) => {
@@ -650,25 +653,25 @@ function RankingTableRow({
           {row.tracked ? <Pin size={14} /> : <PinOff size={14} />}
         </button>
       </td>
-      <td className="max-w-[280px] truncate px-4 py-2.5 text-ink" title={row.query}>
+      <td className="max-w-[280px] truncate px-4 py-3 text-ink" title={row.query}>
         {row.query}
       </td>
-      <td className="font-mono-data text-muted whitespace-nowrap px-4 py-2.5">
+      <td className="font-mono-data text-muted whitespace-nowrap px-4 py-3">
         {row.position != null ? row.position.toFixed(1) : "—"}
       </td>
-      <td className="font-mono-data whitespace-nowrap px-4 py-2.5">
+      <td className="font-mono-data whitespace-nowrap px-4 py-3">
         <ChangeCell change={row.change} />
       </td>
-      <td className="font-mono-data text-muted whitespace-nowrap px-4 py-2.5">
+      <td className="font-mono-data text-muted whitespace-nowrap px-4 py-3">
         {row.impressions.toLocaleString()}
       </td>
-      <td className="font-mono-data text-muted whitespace-nowrap px-4 py-2.5">
+      <td className="font-mono-data text-muted whitespace-nowrap px-4 py-3">
         {row.clicks.toLocaleString()}
       </td>
-      <td className="font-mono-data text-muted whitespace-nowrap px-4 py-2.5">
+      <td className="font-mono-data text-muted whitespace-nowrap px-4 py-3">
         {ctrPct.toFixed(1)}%
       </td>
-      <td className="px-2 py-2.5">
+      <td className="px-2 py-3">
         <button
           type="button"
           title="Hide from list"

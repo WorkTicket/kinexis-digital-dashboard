@@ -18,7 +18,7 @@ export function ErrorState({
   className = "",
 }: Props) {
   return (
-    <Panel className={`py-10 text-center ${className}`.trim()}>
+    <Panel className={`py-6 text-center ${className}`.trim()}>
       <div className="mb-3 flex justify-center text-kinexis-risk" aria-hidden>
         <AlertCircle size={28} strokeWidth={1.75} />
       </div>

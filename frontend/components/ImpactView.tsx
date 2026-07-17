@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { Stat } from "@/components/ui/Stat";
 import { motion } from "@/lib/motion";
 
 type CausalVerdict = {
@@ -126,15 +127,15 @@ function outcomeTone(outcome?: string): "proof" | "danger" | "default" {
 
 function causalVerdictPlainEnglish(cv: CausalVerdict): string {
   if (cv.verdict === "causal_win") {
-    return "Causal check suggests a real lift — the confidence interval excludes zero.";
+    return "Likely a real lift — the change holds up against noise.";
   }
   if (cv.verdict === "causal_loss") {
-    return "Causal check suggests a real decline — the confidence interval excludes zero.";
+    return "Likely a real decline — the change holds up against noise.";
   }
   if (cv.verdict === "inconclusive") {
-    return "Causal check is inconclusive — the change could still be noise.";
+    return "Not enough signal yet — the change could still be noise.";
   }
-  return cv.causal_evidence_label || "Causal check ran, but the verdict is unclear.";
+  return cv.causal_evidence_label || "Lift check ran, but the result is unclear.";
 }
 
 export default function ImpactView({
@@ -220,7 +221,7 @@ export default function ImpactView({
   if (fetching && !impact) {
     return (
       <Panel className="mt-2" padding="sm">
-        <LoadingState label="Loading impact…" variant="spinner" />
+        <LoadingState label="Loading impact…" variant="cards" />
       </Panel>
     );
   }
@@ -307,7 +308,7 @@ export default function ImpactView({
       {impact.status === "no_data" || (waiting && !impact.details?.length) ? (
         <div className="space-y-2">
           <div
-            className="inline-flex items-center gap-2 border border-kinexis-signal/30 px-2.5 py-1.5 text-[11px] text-kinexis-signal"
+            className="inline-flex items-center gap-2 border border-kinexis-signal/30 px-3 py-2 text-[11px] text-kinexis-signal"
             style={{ borderRadius: "var(--radius-sm)" }}
           >
             Evidence timeline · {windowDays}+ days after completion
@@ -363,22 +364,24 @@ export default function ImpactView({
               <p className="text-label mb-2">Organic → revenue funnel</p>
               <div className="metric-grid grid-cols-2 sm:grid-cols-4">
                 {impact.funnel_proof.map((step) => (
-                  <div key={step.metric} className="metric-tile min-w-0 !p-3">
-                    <p className="text-label truncate">{step.label}</p>
-                    <p className="font-mono-data mt-1 text-[13px] text-ink">
-                      {step.after?.toLocaleString?.() ?? step.after}
-                    </p>
-                    {step.change_pct != null && (
-                      <p
-                        className={`font-mono-data mt-0.5 text-[11px] ${
-                          step.change_pct >= 0 ? "text-kinexis-proof" : "text-kinexis-risk"
-                        }`}
-                      >
-                        {step.change_pct > 0 ? "+" : ""}
-                        {step.change_pct}%
-                      </p>
-                    )}
-                  </div>
+                  <Stat
+                    key={step.metric}
+                    label={step.label}
+                    value={step.after?.toLocaleString?.() ?? step.after}
+                    hint={
+                      step.change_pct != null
+                        ? `${step.change_pct > 0 ? "+" : ""}${step.change_pct}%`
+                        : undefined
+                    }
+                    tone={
+                      step.change_pct == null
+                        ? "default"
+                        : step.change_pct >= 0
+                          ? "success"
+                          : "danger"
+                    }
+                    className="min-w-0"
+                  />
                 ))}
               </div>
             </div>
@@ -388,26 +391,25 @@ export default function ImpactView({
           )}
           {impact.causal_verdict && (
             <div
-              className="mb-3 space-y-1 border border-[color:var(--border-subtle)] px-3 py-2.5"
+              className="mb-3 space-y-1 border border-[color:var(--border-subtle)] px-3 py-3"
               style={{ borderRadius: "var(--radius-md)" }}
             >
-              <p className="text-label">Causal verdict</p>
+              <p className="text-label">Lift check</p>
               <p className="text-sm leading-relaxed text-ink">
                 {causalVerdictPlainEnglish(impact.causal_verdict)}
               </p>
               {impact.causal_verdict.causal_evidence_label && (
                 <p className="text-muted text-xs leading-relaxed">
                   {impact.causal_verdict.causal_evidence_label}
-                  {impact.causal_verdict.matched_control ? " · matched control used" : ""}
                 </p>
               )}
               {impact.causal_verdict.bootstrap_ci?.median_effect != null && (
                 <p className="font-mono-data text-xs text-ink-secondary">
-                  Median effect {impact.causal_verdict.bootstrap_ci.median_effect > 0 ? "+" : ""}
+                  Typical change {impact.causal_verdict.bootstrap_ci.median_effect > 0 ? "+" : ""}
                   {impact.causal_verdict.bootstrap_ci.median_effect}
                   {impact.causal_verdict.bootstrap_ci.ci_lower != null &&
                   impact.causal_verdict.bootstrap_ci.ci_upper != null
-                    ? ` · CI [${impact.causal_verdict.bootstrap_ci.ci_lower}, ${impact.causal_verdict.bootstrap_ci.ci_upper}]`
+                    ? ` (range ${impact.causal_verdict.bootstrap_ci.ci_lower} to ${impact.causal_verdict.bootstrap_ci.ci_upper})`
                     : ""}
                 </p>
               )}
@@ -432,7 +434,7 @@ export default function ImpactView({
               {impact.details.slice(0, 8).map((d, i) => (
                 <div
                   key={i}
-                  className="border border-[color:var(--border-subtle)] px-3 py-2.5"
+                  className="border border-[color:var(--border-subtle)] px-3 py-3"
                   style={{ borderRadius: "var(--radius-md)" }}
                 >
                   <div className="mb-2 flex items-center justify-between gap-2">
@@ -469,7 +471,7 @@ export default function ImpactView({
           )}
 
           {(impact.status === "complete" || Boolean(impact.details?.length)) && (
-            <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-[color:var(--border-subtle)] pt-2.5">
+            <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[color:var(--border-subtle)] pt-3">
               <span className="text-muted mr-1 text-xs">Mark:</span>
               {(["win", "loss", "flat"] as const).map((o) => (
                 <Button

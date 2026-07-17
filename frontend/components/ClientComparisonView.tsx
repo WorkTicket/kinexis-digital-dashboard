@@ -33,7 +33,7 @@ function KpiRow({
   const aUp = (a?.changePct ?? 0) > 0;
   const bUp = (b?.changePct ?? 0) > 0;
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-[color:var(--border-subtle)] py-2.5 text-[13px]">
+    <div className="flex items-center justify-between gap-4 border-b border-[color:var(--border-subtle)] py-3 text-[13px]">
       <span className="text-muted w-32 shrink-0 text-[11px] font-medium">{label}</span>
       <div className="flex flex-1 items-center gap-3">
         <span className="font-mono-data flex-1 text-right font-semibold text-ink">
@@ -181,16 +181,16 @@ export default function ClientComparisonView({ clients, onClose }: Props) {
         </div>
       </div>
 
-      {loading && <LoadingState label="Loading comparison..." variant="spinner" />}
+      {loading && <LoadingState label="Loading comparison..." variant="table" />}
 
       {!loading && dataA && dataB && (
         <Panel padding={false} className="overflow-hidden">
-          <div className="flex items-center justify-between border-b border-[color:var(--border-subtle)] bg-surface px-5 py-3">
+          <div className="flex items-center justify-between border-b border-[color:var(--border-subtle)] bg-surface px-4 py-3">
             <span className="text-[13px] font-medium text-ink">{dataA.client.name}</span>
             <GitCompare size={14} className="text-muted" />
             <span className="text-[13px] font-medium text-ink">{dataB.client.name}</span>
           </div>
-          <div className="p-5">
+          <div className="p-4">
             {allKpis.map((key) => (
               <KpiRow
                 key={key}

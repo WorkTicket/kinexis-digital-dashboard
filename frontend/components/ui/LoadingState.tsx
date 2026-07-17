@@ -16,7 +16,7 @@ function Spinner({ label, compact }: { label: string; compact?: boolean }) {
   return (
     <div
       className={`flex flex-col items-center justify-center gap-3 ${
-        compact ? "py-8" : "py-16 sm:py-20"
+        compact ? "py-6" : "py-16 sm:py-20"
       }`}
       role="status"
       aria-live="polite"
@@ -35,7 +35,8 @@ function Spinner({ label, compact }: { label: string; compact?: boolean }) {
 
 /**
  * Loading surface for the seven shells.
- * Prefer `spinner` for view-level waits; use skeleton variants for dense tables/boards.
+ * Prefer skeleton variants (`cards`, `table`, `board`, `overview`) for full-view waits;
+ * use `spinner` with `compact` only for inline / nested panels.
  */
 export function LoadingState({
   label = "Loading",

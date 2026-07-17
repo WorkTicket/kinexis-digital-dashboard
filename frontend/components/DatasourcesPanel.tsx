@@ -236,7 +236,7 @@ export default function DatasourcesPanel({ clientId, datasources, onChanged }: P
   return (
     <Panel className="space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <p className="section-label flex items-center gap-1.5">
+        <p className="section-label flex items-center gap-2">
           <Database size={12} /> Data sources
         </p>
         {!adding && (
@@ -261,7 +261,7 @@ export default function DatasourcesPanel({ clientId, datasources, onChanged }: P
           {datasources.map((ds) => (
             <li
               key={ds.id}
-              className="flex items-center justify-between gap-2 border-b border-[color:var(--border-subtle)] py-1.5 text-xs last:border-0"
+              className="flex items-center justify-between gap-2 border-b border-[color:var(--border-subtle)] py-2 text-xs last:border-0"
             >
               <div className="flex min-w-0 flex-wrap items-center gap-2">
                 <span className="font-semibold uppercase text-ink">{ds.type}</span>

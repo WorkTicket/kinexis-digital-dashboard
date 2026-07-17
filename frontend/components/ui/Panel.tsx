@@ -8,7 +8,7 @@ type Props = {
 
 const padClass = {
   sm: "p-4",
-  md: "p-5",
+  md: "p-4",
   lg: "p-6",
 };
 

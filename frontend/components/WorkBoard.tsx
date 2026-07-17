@@ -19,7 +19,6 @@ import {
   Pencil,
   ArrowRight,
   SkipForward,
-  Users,
   Trash2,
   AlertTriangle,
   Play,
@@ -519,49 +518,6 @@ export default function WorkBoard({
 
   return (
     <div className="animate-fade-up space-y-3">
-      {tasks.length > 0 && (
-        <div className="mb-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <div className="panel flex items-center gap-2.5 !p-3">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-kinexis-focus/10">
-              <Clock size={14} className="text-kinexis-focus" />
-            </div>
-            <div>
-              <p className="text-muted text-[11px] font-medium">Active</p>
-              <p className="font-mono-data text-[15px] font-semibold text-ink">{counts.active}</p>
-            </div>
-          </div>
-          <div className="panel flex items-center gap-2.5 !p-3">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-kinexis-proof/10">
-              <CheckCircle2 size={14} className="text-kinexis-proof" />
-            </div>
-            <div>
-              <p className="text-muted text-[11px] font-medium">Done</p>
-              <p className="font-mono-data text-[15px] font-semibold text-ink">{counts.done}</p>
-            </div>
-          </div>
-          <div className="panel flex items-center gap-2.5 !p-3">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-kinexis-signal/10">
-              <SkipForward size={14} className="text-kinexis-signal" />
-            </div>
-            <div>
-              <p className="text-muted text-[11px] font-medium">Skipped</p>
-              <p className="font-mono-data text-[15px] font-semibold text-ink">{counts.skipped}</p>
-            </div>
-          </div>
-          <div className="panel flex items-center gap-2.5 !p-3">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-lighter">
-              <Users size={14} className="text-muted" />
-            </div>
-            <div>
-              <p className="text-muted text-[11px] font-medium">Assignees</p>
-              <p className="font-mono-data text-[15px] font-semibold text-ink">
-                {assigneeChips.length}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
       {overdueCount > 0 && (
         <div className="mb-3 flex items-center gap-2 rounded-lg border border-kinexis-risk/20 bg-kinexis-risk/5 px-3 py-2 text-xs text-kinexis-risk">
           <AlertTriangle size={12} />
@@ -570,7 +526,7 @@ export default function WorkBoard({
       )}
 
       <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={() => setAssigneeFilter("all")}
@@ -596,11 +552,30 @@ export default function WorkBoard({
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {tasks.length > 0 && (
+            <p className="text-muted mr-1 hidden items-center gap-2 text-[11px] sm:flex">
+              <span>
+                <span className="font-mono-data text-ink">{counts.active}</span> active
+              </span>
+              <span className="text-ink-dim">·</span>
+              <span>
+                <span className="font-mono-data text-ink">{counts.done}</span> done
+              </span>
+              <span className="text-ink-dim">·</span>
+              <span>
+                <span className="font-mono-data text-ink">{counts.skipped}</span> skipped
+              </span>
+              <span className="text-ink-dim">·</span>
+              <span>
+                <span className="font-mono-data text-ink">{assigneeChips.length}</span> assignees
+              </span>
+            </p>
+          )}
           <button
             type="button"
             onClick={() => setBoardView((v) => (v === "list" ? "board" : "list"))}
-            className="text-muted rounded-md px-2 py-1 text-[11px] font-medium hover:text-ink-secondary"
+            className={`text-muted rounded-md px-2 py-1 text-[11px] font-medium hover:text-ink-secondary ${motion.micro}`}
           >
             {boardView === "list" ? "Board view" : "List view"}
           </button>
@@ -631,7 +606,7 @@ export default function WorkBoard({
       )}
 
       {tasks.length > 0 && filtered.length === 0 && (
-        <EmptyState className="!py-8" title="No items in this filter" />
+        <EmptyState className="!py-6" title="No items in this filter" />
       )}
 
       {boardView === "board" && (

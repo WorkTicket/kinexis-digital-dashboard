@@ -137,7 +137,7 @@ export default function ActiveLeversView({
   };
 
   if (loading) {
-    return <LoadingState label="Loading levers…" variant="spinner" />;
+    return <LoadingState label="Loading levers…" variant="cards" />;
   }
 
   if (loadError) {
@@ -184,19 +184,19 @@ export default function ActiveLeversView({
             </div>
             <div className="bg-surface px-4 py-3">
               <p className="text-muted text-[11px] font-medium">Confidence</p>
-              <div className="mt-1 flex items-center gap-1.5">
+              <div className="mt-1 flex items-center gap-2">
                 {summary.byConfidence.high > 0 && (
-                  <Badge tone="proof" className="!px-1.5 !py-0.5 !text-xs">
+                  <Badge tone="proof" className="!px-2 !py-0.5 !text-xs">
                     {summary.byConfidence.high} high
                   </Badge>
                 )}
                 {summary.byConfidence.medium > 0 && (
-                  <Badge tone="momentum" className="!px-1.5 !py-0.5 !text-xs">
+                  <Badge tone="momentum" className="!px-2 !py-0.5 !text-xs">
                     {summary.byConfidence.medium} med
                   </Badge>
                 )}
                 {summary.byConfidence.low > 0 && (
-                  <Badge tone="warning" className="!px-1.5 !py-0.5 !text-xs">
+                  <Badge tone="warning" className="!px-2 !py-0.5 !text-xs">
                     {summary.byConfidence.low} low
                   </Badge>
                 )}
@@ -204,7 +204,7 @@ export default function ActiveLeversView({
             </div>
           </div>
           {active.length > 0 && (
-            <div className="border-t border-[color:var(--border-subtle)] bg-surface-lighter/50 px-4 py-2.5">
+            <div className="border-t border-[color:var(--border-subtle)] bg-surface-lighter/50 px-4 py-3">
               <div className="text-muted flex items-center gap-3 text-[12px]">
                 <span className="flex items-center gap-1">
                   <Zap size={11} className="text-kinexis-proof" />

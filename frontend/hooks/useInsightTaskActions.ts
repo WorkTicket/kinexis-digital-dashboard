@@ -48,7 +48,7 @@ export function useInsightTaskActions({
   setActiveTab,
   success,
   toastError,
-  toastInfo,
+  toastInfo: _toastInfo,
 }: UseInsightTaskActionsOptions) {
   const [showTaskModal, setShowTaskModal] = useState<Insight | null>(null);
   const [taskForm, setTaskForm] = useState({ assigned_to: "", due_date: "" });
@@ -145,7 +145,6 @@ export function useInsightTaskActions({
     }
   ) => {
     if (!window.kinexis?.openCursorForTask) {
-      toastInfo("Cursor integration requires the Electron desktop app");
       return;
     }
     try {
@@ -170,12 +169,12 @@ export function useInsightTaskActions({
         fromToCopy,
       });
       if (result.ok) {
-        success("Opened in Cursor");
+        success("Opened in editor");
       } else {
-        toastError(result.error || "Failed to open Cursor");
+        toastError(result.error || "Could not open editor");
       }
     } catch {
-      toastError("Failed to open Cursor — is it installed?");
+      toastError("Could not open editor");
     }
   };
 
@@ -211,7 +210,7 @@ export function useInsightTaskActions({
       setInsights((prev) =>
         prev.map((i) => (resolvedIds.includes(i.id) ? { ...i, resolved: true } : i))
       );
-      success(`Assigned ${created.length} fix${created.length === 1 ? "" : "es"} to Cursor`);
+      success(`Assigned ${created.length} fix${created.length === 1 ? "" : "es"}`);
       setActiveTab("execute");
     } catch {
       toastError("Failed to assign selected insights");
@@ -261,7 +260,7 @@ export function useInsightTaskActions({
         console.warn("Failed to resolve insight after assign", e);
         toastError("Assigned, but could not mark insight resolved");
       });
-      success("Assigned to Cursor — baseline captured, opening IDE");
+      success("Assigned — baseline captured");
       void openInCursor(newTask, {
         recommendedAction: insight.recommended_action ?? undefined,
         message: insight.message,
@@ -305,7 +304,7 @@ export function useInsightTaskActions({
       setShowTaskModal(null);
       setTaskForm({ assigned_to: "", due_date: "" });
       if (assignee === "Cursor") {
-        success("Assigned to Cursor — opening IDE");
+        success("Assigned — opening editor");
         void openInCursor(newTask, {
           recommendedAction: showTaskModal.recommended_action ?? undefined,
           message: showTaskModal.message,

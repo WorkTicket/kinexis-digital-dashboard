@@ -259,7 +259,7 @@ export function buildHealthFromApi(
     diagnosis = `Site relaunched ${daysSinceRelaunch}d ago — health is settling through the ${GRACE_PERIOD_DAYS}-day grace window.`;
   } else if (score <= 0) {
     headline = "No health score yet";
-    diagnosis = "Sync connected sources to compute the authoritative 7-day health score.";
+    diagnosis = "Sync connected sources to compute the 7-day health score.";
   } else if (grade === "Excellent" || grade === "Healthy") {
     headline = "Performance is in good shape — keep compounding wins";
     diagnosis =
